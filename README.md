@@ -248,3 +248,13 @@ ledgerly/
 - Use `expenses/views.py` for dashboard and CRUD logic.
 - Templates go in `expenses/templates/expenses/`.
 - Register your app in `INSTALLED_APPS` in `ledgerly/settings.py`.
+
+---
+
+## Wireframe
+
+![Wireframe](assets/images/Screenshot%202025-09-25%20114035.png)
+
+This wireframe shows the planned layout and user flow for the Ledgerly dashboard and transaction screens.
+
+---

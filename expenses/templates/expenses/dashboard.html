@@ -1,0 +1,41 @@
+<h1>Expenses Tracker Dashboard</h1>
+<!-- Add form for new transaction -->
+<!-- Show monthly summary, top spends, search, and transaction history here -->
+ <h2>Add Transaction</h2>
+<form method="post">
+    {% csrf_token %}
+    <label>Type:</label>
+    <select name="type">
+        <option value="INCOME">Income</option>
+        <option value="OUTGO">Outgoing</option>
+    </select>
+    <label>Amount:</label>
+    <input type="number" name="amount_in_cents" required>
+    <label>Category:</label>
+    <select name="category">
+        {% for category in categories %}
+            <option value="{{ category.id }}">{{ category.name }}</option>
+        {% endfor %}
+    </select>
+    <label>Date:</label>
+    <input type="date" name="occurred_on" required>
+    <label>Note:</label>
+    <input type="text" name="note">
+    <button type="submit">Add</button>
+</form>
+<h2>Monthly Summary</h2>
+<p>Income: {{ income }}</p>
+<p>Outgoings: {{ outgo }}</p>
+<p>Balance: {{ balance }}</p>
+{% if top_spend %}
+    <p>Most expensive spend: {{ top_spend.amount_in_cents }} ({{ top_spend.category }})</p>
+{% endif %}
+
+<h2>Recent Transactions</h2>
+<ul>
+    {% for t in transactions %}
+        <li>{{ t.occurred_on }}: {{ t.type }} - {{ t.amount_in_cents }} ({{ t.category }}) {{ t.note }}</li>
+    {% empty %}
+        <li>No transactions yet.</li>
+    {% endfor %}
+</ul>
