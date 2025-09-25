@@ -65,16 +65,9 @@ INSTALLED_APPS = [
     'expenses',
 ]
 
-# Allauth configuration for username-only authentication.
-ACCOUNT_EMAIL_REQUIRED = False
-ACCOUNT_EMAIL_VERIFICATION = 'none'
-ACCOUNT_USERNAME_REQUIRED = True
-ACCOUNT_AUTHENTICATION_METHOD = 'username'
-ACCOUNT_USERNAME_BLACKLIST = []
-ACCOUNT_USERNAME_MIN_LENGTH = 1
-# Force usernames to be compared and stored in lowercase.
-ACCOUNT_USERNAME_CASE_SENSITIVE = False
-ACCOUNT_PRESERVE_USERNAME_CASING = False
+# Update deprecated allauth settings
+ACCOUNT_LOGIN_METHODS = {'username'}
+ACCOUNT_SIGNUP_FIELDS = ['email', 'username*', 'password1*', 'password2*']
 
 # Use the allauth authentication backend so case-insensitive username
 # matching is respected during login, while keeping Django's defaults.
