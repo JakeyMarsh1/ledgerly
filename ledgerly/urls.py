@@ -1,24 +1,18 @@
-"""
-URL configuration for ledgerly project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-from django.contrib import admin
-from django.urls import path
+"""Project URL routing for Ledgerly, annotated per entry."""
+from django.urls import path, include
 from expenses import views
+from expenses.admin import ledgerly_admin_site
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', views.dashboard, name='dashboard'),  # All traffic goes to dashboard
+    # Django admin for managing data when needed.
+    path('admin/', ledgerly_admin_site.urls),
+    # Primary dashboard landing page for authenticated users.
+    path('', views.dashboard, name='dashboard'),
+    # Allow users to delete their account via confirmation page.
+    path('accounts/delete/', views.delete_account, name='account_delete'),
+    # Bypass allauth's intermediate logout page and immediately redirect
+    # users back to the login form.
+    path('accounts/logout/', views.custom_logout, name='account_logout'),
+    # Include allauth's account management routes (login, signup, etc.).
+    path('accounts/', include('allauth.urls')),
 ]

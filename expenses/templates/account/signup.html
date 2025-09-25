@@ -1,0 +1,60 @@
+{# Load crispy-forms helpers plus static file resolution. #}
+{% load crispy_forms_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Title displayed in the browser tab. -->
+    <title>Sign Up - Ledgerly</title>
+    <!-- Bootstrap CSS for responsive layout and components. -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Project-level stylesheet served through Django static files. -->
+    <link rel="stylesheet" href="{% static 'expenses/style.css' %}">
+</head>
+<body>
+    <!-- Lightweight navbar consistent with the dashboard header. -->
+    <nav class="navbar navbar-light bg-light">
+        <div class="container">
+            {% if user.is_authenticated %}
+                <a class="navbar-brand mb-0 h1" href="{% url 'dashboard' %}">Ledgerly</a>
+            {% else %}
+                <span class="navbar-brand mb-0 h1">Ledgerly</span>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="container py-4">
+        <!-- Reuse branded heading for familiarity. -->
+        <h1 class="mb-4 text-center"><u>Ledgerly</u></h1>
+        <div class="row justify-content-center align-items-center min-vh-50">
+            <div class="col-md-6 col-lg-5">
+                <!-- Card layout keeps the form centered and focused. -->
+                <div class="card shadow">
+                    <div class="card-body p-4">
+                        <!-- Clear call-to-action for creating an account. -->
+                        <h2 class="card-title text-center mb-4">Sign Up</h2>
+                        <!-- Signup form posts new user details to allauth. -->
+                        <form method="post" class="mb-3">
+                            <!-- CSRF token prevents cross-site request forgery. -->
+                            {% csrf_token %}
+                            <!-- Render the signup form fields with crispy styling. -->
+                            {{ form|crispy }}
+                            <!-- Full-width submit button for easy tapping. -->
+                            <div class="d-grid mt-3">
+                                <button type="submit" class="btn btn-primary btn-lg">Sign Up</button>
+                            </div>
+                        </form>
+                        <!-- Provide quick navigation for returning users. -->
+                        <div class="text-center">
+                            <p class="mb-0">Already have an account? <a href="{% url 'account_login' %}" class="text-decoration-none">Login here</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Include Bootstrap JS bundle to support interactive elements. -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
