@@ -23,11 +23,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 
 try:
-    # Pull SECRET_KEY from env.py locally, falling back to an
-    # environment variable in production.
-    from env import SECRET_KEY
+    # Pull secrets and database configuration from env.py locally,
+    # falling back to environment variables in deployed environments.
+    from env import SECRET_KEY, DATABASE_URL  # type: ignore
 except ImportError:
     SECRET_KEY = os.environ.get("SECRET_KEY")
+    DATABASE_URL = os.environ.get("DATABASE_URL")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Toggle Django debug features. Set to False when deploying to
@@ -55,6 +56,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'crispy_forms',
     'crispy_bootstrap5',
@@ -79,6 +81,7 @@ AUTHENTICATION_BACKENDS = [
 MIDDLEWARE = [
     # Adds security-related HTTP headers.
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     # Manages session data stored in cookies or the DB.
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -117,10 +120,12 @@ WSGI_APPLICATION = 'ledgerly.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    # dj_database_url reads DATABASE_URL env var when available.
-    # Falls back to local SQLite for quick development spin-up.
+    # dj_database_url reads DATABASE_URL (from env.py or environment).
+    # Falls back to local SQLite only if no database URL is supplied.
     'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+        default=(DATABASE_URL or f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
+        conn_max_age=600,
+        ssl_require=not DEBUG,
     )
 }
 
@@ -178,6 +183,8 @@ USE_TZ = True
 # URL prefix where static assets are served from (collectstatic also
 # publishes here when you deploy).
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
