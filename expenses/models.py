@@ -1,7 +1,16 @@
 """Database models for the Ledgerly expenses app."""
 
+from datetime import date
+
 from django.db import models
 from django.contrib.auth.models import User
+
+
+def default_cycle_start():
+    """Return the first day of the current month for cycle tracking."""
+
+    today = date.today()
+    return today.replace(day=1)
 
 
 class Category(models.Model):
@@ -52,3 +61,17 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{self.type}: {self.amount_in_cents} ({self.occurred_on})"
+
+
+class UserSettings(models.Model):
+    """Per-user configuration such as the preferred cycle start date."""
+
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='settings',
+    )
+    cycle_start_date = models.DateField(default=default_cycle_start)
+
+    def __str__(self):
+        return f"Settings for {self.user.username}"

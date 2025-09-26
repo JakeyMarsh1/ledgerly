@@ -1,3 +1,5 @@
+"""Custom admin site wiring so Ledgerly feels cohesive in Django admin."""
+
 from django.contrib import admin
 from django.contrib.admin import AdminSite
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
@@ -7,11 +9,15 @@ from .models import Category, Transaction
 
 
 class LedgerlyAdminSite(AdminSite):
+    """Housekeep the admin index so auth users appear under an Accounts app."""
+
     site_header = "Ledgerly Admin"
     site_title = "Ledgerly Admin"
     index_title = "Ledgerly administration"
 
     def get_app_list(self, request):
+        """Group proxy account users into a custom Accounts section."""
+
         app_list = super().get_app_list(request)
         accounts_models = []
         filtered_apps = []
@@ -19,6 +25,7 @@ class LedgerlyAdminSite(AdminSite):
         for app in app_list:
             remaining_models = []
             for model in app["models"]:
+                # Pull the proxy AccountUser out of the django.contrib app.
                 if model["object_name"] == "AccountUser":
                     accounts_models.append(model)
                 else:
@@ -29,6 +36,8 @@ class LedgerlyAdminSite(AdminSite):
                 filtered_apps.append(app)
 
         if accounts_models:
+            # Mimic a dedicated "Accounts" app so admin users can
+            # find people fast.
             accounts_app = {
                 "name": "Accounts",
                 "app_label": "accounts",
@@ -45,6 +54,8 @@ ledgerly_admin_site = LedgerlyAdminSite(name="ledgerly_admin")
 
 
 class AccountUser(User):
+    """Proxy model that lets us customise how Users appear in admin."""
+
     class Meta:
         proxy = True
         verbose_name = "User"
@@ -52,15 +63,15 @@ class AccountUser(User):
 
 
 class AccountUserAdmin(DjangoUserAdmin):
-    pass
+    """Leverage Django's built-in user admin tooling without alteration."""
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    pass
+    """Keep the option open for future list-display tweaks."""
 
 
 class TransactionAdmin(admin.ModelAdmin):
-    pass
+    """Placeholder admin so transaction metadata can be refined later."""
 
 
 ledgerly_admin_site.register(AccountUser, AccountUserAdmin)
