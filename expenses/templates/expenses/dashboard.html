@@ -36,6 +36,18 @@
     </nav>
 
     <div class="container py-4">
+        {% if messages %}
+            <div class="mb-3">
+                {% for message in messages %}
+                    <div
+                        class="alert alert-{{ message.tags|default:'info' }} mb-2 py-2 px-3 small shadow-sm"
+                        role="alert"
+                    >
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
         <div class="row g-4 align-items-stretch">
             <div class="col-lg-6">
                 <div class="card shadow-sm h-100">
@@ -44,8 +56,13 @@
                             <h2 class="h5 mb-0">Income vs Expenses</h2>
                             <span class="badge bg-primary">Last 12 Months</span>
                         </div>
-                        <div class="ratio ratio-16x9">
-                            <canvas id="monthlyChart" aria-label="Monthly income versus expenses" role="img"></canvas>
+                        <div class="rounded border border-secondary-subtle" style="height: 240px;">
+                            <canvas
+                                id="monthlyChart"
+                                aria-label="Monthly income versus expenses"
+                                role="img"
+                                style="height: 100%;"
+                            ></canvas>
                         </div>
                     </div>
                 </div>
@@ -213,15 +230,6 @@
                             <input type="number" name="amount_in_cents" class="form-control" min="0" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Category</label>
-                            <select name="category" class="form-select">
-                                <option value="">Uncategorized</option>
-                                {% for category in categories %}
-                                    <option value="{{ category.id }}">{{ category.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="mb-3">
                             <label class="form-label">Date</label>
                             <input type="date" name="occurred_on" class="form-control" required>
                         </div>
@@ -257,8 +265,8 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Category</label>
-                            <select name="category" class="form-select">
-                                <option value="">Uncategorized</option>
+                            <select name="category" class="form-select" required>
+                                <option value="" disabled selected>Choose a category</option>
                                 {% for category in categories %}
                                     <option value="{{ category.id }}">{{ category.name }}</option>
                                 {% endfor %}

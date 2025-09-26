@@ -3,6 +3,7 @@
 from calendar import monthrange
 from datetime import date
 
+from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.db import models
@@ -137,13 +138,28 @@ def dashboard(request):
 
         # Default: persist the new transaction from the submitted form.
         # Missing category values are stored as NULL to keep records flexible.
+        category_id = request.POST.get('category') or None
+        if request.POST['type'] == 'OUTGO' and category_id is None:
+            messages.error(
+                request,
+                'Outgoing transactions require a category. '
+                'Please choose one before saving.',
+            )
+            return redirect('dashboard')
+
         Transaction.objects.create(
             user=request.user,
             type=request.POST['type'],
             amount_in_cents=request.POST['amount_in_cents'],
-            category_id=request.POST.get('category') or None,
+            category_id=category_id,
             occurred_on=request.POST['occurred_on'],
             note=request.POST.get('note', ''),
+        )
+        messages.success(
+            request,
+            'Income saved successfully.'
+            if request.POST['type'] == 'INCOME'
+            else 'Expense saved successfully.',
         )
         return redirect('dashboard')
 

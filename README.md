@@ -129,7 +129,7 @@ A single weekly number reduces cognitive load and supports everyday decisions.
 ## Entity Relationship Diagram (ERD)
 ### Visual ERD
 
-![ERD Diagram](assets/images/erd.png)
+![ERD Diagram](assets/readme_images/erd.png)
 
 This diagram represents the relationships between the `User`, `Transaction`, and `Category` entities. Each `User` can have multiple `Transactions`, while each `Transaction` optionally belongs to a `Category`. Categories are shared globally and not user-specific.
 
@@ -253,7 +253,7 @@ ledgerly/
 
 ## Wireframe
 
-![Wireframe](assets/images/Screenshot%202025-09-25%20114035.png)
+![Wireframe](assets/readme_images/Screenshot%202025-09-25%20114035.png)
 
 This wireframe shows the planned layout and user flow for the Ledgerly dashboard and transaction screens.
 
