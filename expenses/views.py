@@ -128,7 +128,7 @@ def dashboard(request):
         for offset in range(11, -1, -1)
     ]
     months = [
-        start.strftime('Cycle starting %d %b %Y')
+        start.strftime('%Y-%m-%d')
         for start in cycle_starts
     ]
     income_data = []
@@ -490,4 +490,3 @@ def currency_settings(request):
             'form': form,
         },
     )
-

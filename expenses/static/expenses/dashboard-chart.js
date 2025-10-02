@@ -7,15 +7,71 @@
     }
 
     const labels = JSON.parse(monthsEl.textContent);
-    const incomeData = JSON.parse(incomeEl.textContent);
-    const expenseData = JSON.parse(expenseEl.textContent);
+    const incomeRaw = JSON.parse(incomeEl.textContent).map((value) => Number(value));
+    const expenseRaw = JSON.parse(expenseEl.textContent).map((value) => Number(value));
+
+    if (incomeRaw.some((value) => Number.isNaN(value)) || expenseRaw.some((value) => Number.isNaN(value))) {
+        console.warn('Ledgerly chart skipped: series contains non-numeric values.', {
+            incomeRaw,
+            expenseRaw,
+        });
+        return;
+    }
+
+    if (labels.length !== incomeRaw.length || labels.length !== expenseRaw.length) {
+        console.warn('Ledgerly chart mismatch: label count does not equal series length.', {
+            labels,
+            incomeRaw,
+            expenseRaw,
+        });
+    }
 
     const ctx = document.getElementById('monthlyChart');
     if (!ctx || typeof Chart === 'undefined') {
         return;
     }
 
-    new Chart(ctx, {
+    const currencyCode = ctx.dataset.currencyCode || 'USD';
+    const currencySymbol = ctx.dataset.currencySymbol || '$';
+    let currencyFormatter;
+    try {
+        currencyFormatter = new Intl.NumberFormat(undefined, {
+            style: 'currency',
+            currency: currencyCode,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+    } catch (error) {
+        console.warn('Ledgerly chart: falling back to symbol formatting.', { error });
+        currencyFormatter = {
+            format(value) {
+                return `${currencySymbol}${value.toFixed(2)}`;
+            },
+        };
+    }
+
+    const dateFormatter = new Intl.DateTimeFormat(undefined, {
+        day: '2-digit',
+        month: '2-digit',
+        year: '2-digit',
+    });
+
+    const incomeData = incomeRaw.map((value) => value / 100);
+    const expenseData = expenseRaw.map((value) => value / 100);
+
+    const getDateLabel = (index) => {
+        const label = labels[index];
+        if (!label) {
+            return '';
+        }
+        const parsed = new Date(label);
+        if (Number.isNaN(parsed.getTime())) {
+            return label;
+        }
+        return dateFormatter.format(parsed);
+    };
+
+    const chart = new Chart(ctx, {
         type: 'line',
         data: {
             labels,
@@ -27,6 +83,11 @@
                     backgroundColor: 'rgba(59, 130, 246, 0.2)',
                     tension: 0.3,
                     fill: true,
+                    pointRadius: 3,
+                    pointHoverRadius: 6,
+                    pointBorderWidth: 0,
+                    pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                    pointHitRadius: 10,
                 },
                 {
                     label: 'Expenses',
@@ -35,6 +96,11 @@
                     backgroundColor: 'rgba(239, 68, 68, 0.2)',
                     tension: 0.3,
                     fill: true,
+                    pointRadius: 3,
+                    pointHoverRadius: 6,
+                    pointBorderWidth: 0,
+                    pointBackgroundColor: 'rgba(239, 68, 68, 1)',
+                    pointHitRadius: 10,
                 },
             ],
         },
@@ -45,17 +111,72 @@
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        callback: (value) => `${value}¢`,
+                        callback: (value) => currencyFormatter.format(value),
+                    },
+                },
+                x: {
+                    ticks: {
+                        callback: (value, index) => getDateLabel(index),
+                        maxRotation: 0,
+                        autoSkip: true,
                     },
                 },
             },
             plugins: {
                 legend: {
-                    labels: {
-                        color: '#fff',
+                    display: false,
+                },
+                tooltip: {
+                    callbacks: {
+                        title(items) {
+                            if (!items.length) {
+                                return '';
+                            }
+                            return getDateLabel(items[0].dataIndex ?? 0);
+                        },
+                        label(context) {
+                            const value = context.parsed.y ?? 0;
+                            const formatted = currencyFormatter.format(value);
+                            if (context.dataset && context.dataset.label) {
+                                return `${context.dataset.label}: ${formatted}`;
+                            }
+                            return formatted;
+                        },
                     },
                 },
             },
         },
     });
+    const legendContainer = document.getElementById('monthlyChartLegend');
+    if (legendContainer) {
+        const renderLegend = () => {
+            legendContainer.innerHTML = '';
+            chart.data.datasets.forEach((dataset, datasetIndex) => {
+                const isVisible = chart.isDatasetVisible(datasetIndex);
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'chart-legend__item';
+                if (!isVisible) {
+                    item.classList.add('chart-legend__item--muted');
+                }
+                item.style.color = dataset.borderColor ?? '#fff';
+                const orb = document.createElement('span');
+                orb.className = 'chart-legend__orb';
+                orb.style.backgroundColor = dataset.borderColor ?? '#fff';
+                orb.style.boxShadow = `0 0 6px ${dataset.borderColor}, 0 0 12px ${dataset.borderColor}`;
+                const label = document.createElement('span');
+                label.className = 'chart-legend__label';
+                label.textContent = dataset.label;
+                item.append(orb, label);
+                item.addEventListener('click', () => {
+                    const currentlyVisible = chart.isDatasetVisible(datasetIndex);
+                    chart.setDatasetVisibility(datasetIndex, !currentlyVisible);
+                    chart.update();
+                    renderLegend();
+                });
+                legendContainer.appendChild(item);
+            });
+        };
+        renderLegend();
+    }
 })();
