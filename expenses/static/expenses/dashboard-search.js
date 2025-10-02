@@ -15,7 +15,7 @@
     const resultsContainer = resultsSelector ? document.querySelector(resultsSelector) : null;
     const messageElement = messageSelector ? document.querySelector(messageSelector) : null;
 
-    if (!searchUrl || !resultsContainer || !messageElement) {
+    if (!searchUrl || !resultsContainer) {
         return;
     }
 
@@ -30,6 +30,10 @@
     };
 
     const updateMessage = (state, term = '') => {
+        if (!messageElement) {
+            return;
+        }
+
         const defaultMessage = messageElement.dataset.defaultMessage || '';
         const emptyMessage = messageElement.dataset.emptyMessage || '';
         const foundPrefix = messageElement.dataset.foundPrefix || '';

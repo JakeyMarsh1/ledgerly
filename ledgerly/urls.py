@@ -21,6 +21,11 @@ urlpatterns = [
         name='transaction_delete',
     ),
     path(
+        'transactions/calendar-data/',
+        views.transaction_calendar_data,
+        name='transaction_calendar_data',
+    ),
+    path(
         'transactions/search-results/',
         views.transaction_search_results,
         name='transaction_search_results',

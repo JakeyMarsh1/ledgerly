@@ -11,12 +11,14 @@ from django.db import models
 from django.db.models import Q, Sum
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.template.loader import render_to_string
 from django.utils import timezone
 
 from .currencies import (
     DEFAULT_CURRENCY,
     MAX_CENTS,
+    cents_to_display,
     get_currency_symbol,
     parse_display_amount_to_cents,
 )
@@ -367,6 +369,101 @@ def transaction_delete(request, pk):
             'currency_symbol': currency_symbol,
         },
     )
+
+
+@login_required
+def transaction_calendar_data(request):
+    """Return month-level transaction details for the calendar modal."""
+
+    today = timezone.localdate()
+    year_param = request.GET.get('year')
+    month_param = request.GET.get('month')
+
+    try:
+        year = int(year_param) if year_param else today.year
+    except (TypeError, ValueError):
+        year = today.year
+
+    try:
+        month = int(month_param) if month_param else today.month
+    except (TypeError, ValueError):
+        month = today.month
+
+    if month < 1 or month > 12:
+        month = today.month
+
+    if year < 1900 or year > today.year + 5:
+        year = today.year
+
+    try:
+        start_date = date(year, month, 1)
+    except ValueError:
+        start_date = date(today.year, today.month, 1)
+        year = start_date.year
+        month = start_date.month
+
+    days_in_month = monthrange(year, month)[1]
+    end_date = date(year, month, days_in_month)
+    next_month = end_date + timedelta(days=1)
+
+    settings_obj, _ = UserSettings.objects.get_or_create(user=request.user)
+    currency_code = settings_obj.currency_code or DEFAULT_CURRENCY
+
+    month_transactions = (
+        Transaction.objects
+        .filter(
+            user=request.user,
+            occurred_on__gte=start_date,
+            occurred_on__lt=next_month,
+        )
+        .select_related('category')
+        .order_by('occurred_on', 'name', 'pk')
+    )
+
+    type_labels = dict(Transaction.TYPE_CHOICES)
+    day_map = {}
+    for txn in month_transactions:
+        day_key = txn.occurred_on.isoformat()
+        day_map.setdefault(day_key, []).append({
+            'id': txn.pk,
+            'name': txn.name,
+            'type': txn.type,
+            'type_display': type_labels.get(txn.type, txn.type.title()),
+            'category': txn.category.name if txn.category else 'Uncategorized',
+            'note': txn.note or '',
+            'amount_display': (
+                f"-{cents_to_display(txn.amount_in_cents, currency_code)}"
+                if txn.type == Transaction.OUTGO
+                else f"+{cents_to_display(txn.amount_in_cents, currency_code)}"
+            ),
+            'detail_url': reverse('transaction_detail', args=[txn.pk]),
+            'occurred_on': txn.occurred_on.isoformat(),
+        })
+
+    days = [
+        {'date': day, 'transactions': entries}
+        for day, entries in sorted(day_map.items())
+    ]
+
+    month_prefix = f"{year:04d}-{month:02d}"
+    today_iso = today.isoformat()
+
+    if today_iso.startswith(month_prefix):
+        initial_date = today_iso
+    elif days:
+        initial_date = days[0]['date']
+    else:
+        initial_date = start_date.isoformat()
+
+    return JsonResponse({
+        'year': year,
+        'month': month,
+        'month_label': start_date.strftime('%B %Y'),
+        'days': days,
+        'currency_symbol': get_currency_symbol(currency_code),
+        'today': today_iso,
+        'initial_date': initial_date,
+    })
 
 
 def custom_logout(request):

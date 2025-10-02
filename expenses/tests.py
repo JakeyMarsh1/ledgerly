@@ -131,6 +131,50 @@ class TransactionFlowTests(TestCase):
             ).exists()
         )
 
+    def test_transaction_calendar_endpoint_returns_month_data(self):
+        """Calendar endpoint returns grouped transactions for the month."""
+
+        Transaction.objects.create(
+            user=self.user,
+            name='Calendar Test',
+            type=Transaction.INCOME,
+            amount_in_cents=12000,
+            occurred_on=date(2025, 9, 5),
+            note='Calendar note',
+        )
+
+        Transaction.objects.create(
+            user=self.user,
+            name='Same Day Expense',
+            type=Transaction.OUTGO,
+            amount_in_cents=3000,
+            category=self.category,
+            occurred_on=date(2025, 9, 5),
+        )
+
+        self._login()
+        response = self.client.get(
+            reverse('transaction_calendar_data'),
+            {'year': '2025', 'month': '9'},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data['year'], 2025)
+        self.assertEqual(data['month'], 9)
+
+        days_by_date = {day['date']: day for day in data['days']}
+        self.assertIn('2025-09-05', days_by_date)
+        self.assertEqual(len(days_by_date['2025-09-05']['transactions']), 2)
+
+    def test_transaction_calendar_requires_login(self):
+        """Anonymous users should be redirected to log in."""
+
+        response = self.client.get(reverse('transaction_calendar_data'))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/accounts/login/', response['Location'])
+
     def test_clear_history_removes_user_transactions(self):
         """Clearing history deletes only the logged-in user's transactions."""
 
