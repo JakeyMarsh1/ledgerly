@@ -1,6 +1,7 @@
 {# Load crispy-forms helpers plus access to static assets. #}
 {% load crispy_forms_tags %}
 {% load static %}
+{% load expense_extras %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,20 +18,24 @@
 {% if user.is_authenticated %}
     <!-- Primary dashboard shown only to authenticated users. -->
     <nav class="navbar navbar-light bg-light">
-        <div class="container d-flex justify-content-between align-items-center gap-4">
+        <div class="container d-flex align-items-center gap-4">
             <a class="navbar-brand mb-0 h1" href="{% url 'dashboard' %}">Ledgerly</a>
-            <span class="navbar-text flex-grow-1 text-center">Welcome, {{ user.username }}!</span>
-            <div class="dropdown">
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <span class="navbar-text mb-0 text-nowrap">Welcome, {{ user.username }}!</span>
+                <div class="dropdown">
                 <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
                     Account
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
                     <li><a class="dropdown-item" href="{% url 'account_change_password' %}">Change Password</a></li>
                     <li><a class="dropdown-item" href="{% url 'account_email' %}">Email Settings</a></li>
+                    <li><a class="dropdown-item" href="{% url 'account_currency_settings' %}">Currency Settings</a></li>
+                    <li><a class="dropdown-item text-danger" href="{% url 'account_clear_history' %}">Clear History</a></li>
                     <li><a class="dropdown-item text-danger" href="{% url 'account_delete' %}">Delete Account</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="{% url 'account_logout' %}">Logout</a></li>
                 </ul>
+            </div>
             </div>
         </div>
     </nav>
@@ -40,10 +45,11 @@
             <div class="mb-3">
                 {% for message in messages %}
                     <div
-                        class="alert alert-{{ message.tags|default:'info' }} mb-2 py-2 px-3 small shadow-sm"
+                        class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show mb-2 py-2 px-3 small shadow-sm"
                         role="alert"
                     >
                         {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 {% endfor %}
             </div>
@@ -73,34 +79,30 @@
                         <div class="card shadow-sm h-100">
                             <div class="card-body d-flex flex-column">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h2 class="h5 mb-0">Spend History</h2>
-                                    {% if search_query %}
-                                        <span class="badge bg-warning text-dark">Filtered</span>
-                                    {% endif %}
+                                    <h2 class="h5 mb-0 text-primary">Spend History</h2>
                                 </div>
-                                <p class="text-muted small mb-3">
-                                    {% if search_query %}
-                                        Filtered results
-                                    {% else %}
-                                        Latest 10 transactions
-                                    {% endif %}
-                                </p>
+                                <p class="text-primary small mb-3">Latest 15 transactions</p>
                                 <div class="flex-grow-1 overflow-auto" style="max-height: 320px;">
                                     <ul class="list-group list-group-flush">
                                         {% for t in transactions %}
-                                            <li class="list-group-item bg-transparent">
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <span class="fw-semibold">{{ t.occurred_on|date:'d M Y' }}</span>
-                                                    <span class="{% if t.type == 'OUTGO' %}text-danger{% else %}text-success{% endif %} fw-semibold">
-                                                        {{ t.type }} {{ t.amount_in_cents }}
-                                                    </span>
-                                                </div>
-                                                <div class="small text-muted">
-                                                    {{ t.category|default:'Uncategorized' }}{% if t.note %} — {{ t.note }}{% endif %}
+                                            <li class="list-group-item bg-transparent px-0 py-2">
+                                                <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+                                                    <div class="flex-grow-1" style="min-width: 0;">
+                                                        <h3 class="h6 mb-1 text-primary text-truncate">{{ t.name }}</h3>
+                                                        <div class="small text-primary text-break">
+                                                            {{ t.occurred_on|date:'d M Y' }} · {{ t.category|default:'Uncategorized' }}
+                                                            {% if t.note %}<span></span>{% endif %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <span class="fw-semibold {% if t.type == 'OUTGO' %}text-danger{% else %}text-success{% endif %}">
+                                                            {% if t.type == 'OUTGO' %}-{% else %}+{% endif %}{{ t.amount_in_cents|cents_to_currency:currency_code }}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </li>
                                         {% empty %}
-                                            <li class="list-group-item bg-transparent text-center text-muted py-4">
+                                            <li class="list-group-item bg-transparent text-center text-primary py-4">
                                                 No transactions to display.
                                             </li>
                                         {% endfor %}
@@ -112,22 +114,27 @@
                     <div class="col-12 col-lg-4">
                         <div class="card shadow-sm h-100">
                             <div class="card-body d-flex flex-column">
-                                <h2 class="h5 mb-3">Top Expenses</h2>
-                                <p class="text-muted small mb-3">Highest outgoing transactions this month.</p>
+                                <h2 class="h5 mb-3 text-primary">Top Expenses</h2>
+                                <p class="text-primary small mb-3">Highest outgoing transactions this month.</p>
                                 <div class="flex-grow-1 overflow-auto" style="max-height: 320px;">
                                     <ul class="list-group list-group-flush">
                                         {% for expense in top_expenses %}
-                                            <li class="list-group-item bg-transparent">
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <span>{{ expense.category|default:'Uncategorized' }}</span>
-                                                    <span class="text-danger fw-semibold">{{ expense.amount_in_cents }}</span>
-                                                </div>
-                                                <div class="small text-muted">
-                                                    {{ expense.occurred_on|date:'d M Y' }}{% if expense.note %} — {{ expense.note }}{% endif %}
+                                            <li class="list-group-item bg-transparent px-0 py-2">
+                                                <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+                                                    <div class="flex-grow-1" style="min-width: 0;">
+                                                        <h3 class="h6 mb-1 text-primary text-truncate">{{ expense.name }}</h3>
+                                                        <div class="small text-primary text-break">
+                                                            {{ expense.occurred_on|date:'d M Y' }} · {{ expense.category|default:'Uncategorized' }}
+                                                            {% if expense.note %}<span>— {{ expense.note }}</span>{% endif %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <span class="fw-semibold text-danger">-{{ expense.amount_in_cents|cents_to_currency:currency_code }}</span>
+                                                    </div>
                                                 </div>
                                             </li>
                                         {% empty %}
-                                            <li class="list-group-item bg-transparent text-center text-muted py-4">
+                                            <li class="list-group-item bg-transparent text-center text-primary py-4">
                                                 No expense data yet.
                                             </li>
                                         {% endfor %}
@@ -139,25 +146,55 @@
                     <div class="col-12 col-lg-4">
                         <div class="card shadow-sm h-100">
                             <div class="card-body d-flex flex-column align-items-stretch">
-                                <h2 class="h5 mb-3">Search</h2>
-                                <form class="d-flex flex-column gap-3" method="get" action="{% url 'dashboard' %}">
+                                <h2 class="h5 mb-3 text-primary">Search</h2>
+                                <form
+                                    class="d-flex flex-column gap-3"
+                                    method="get"
+                                    action="{% url 'dashboard' %}"
+                                    data-search-url="{% url 'transaction_search_results' %}"
+                                    data-results-target="#search-results"
+                                    data-message-target="#search-results-message"
+                                >
                                     <div>
-                                        <label class="form-label small text-uppercase text-muted">Keyword</label>
+                                        <label class="form-label small text-uppercase text-primary">Keyword</label>
                                         <input
                                             type="search"
                                             name="q"
                                             class="form-control"
                                             placeholder="Search transactions..."
                                             value="{{ search_query }}"
+                                            autocomplete="off"
                                         >
                                     </div>
                                     <button class="btn btn-outline-primary w-100" type="submit">Search</button>
                                 </form>
-                                {% if search_query %}
-                                    <p class="small text-muted mt-3 mb-0 text-center">
-                                        Showing results for “{{ search_query }}”
-                                    </p>
-                                {% endif %}
+                                <p
+                                    id="search-results-message"
+                                    class="small text-primary mt-3 mb-1 text-center"
+                                    data-default-message="Start typing to search by name, note, type, or category."
+                                    data-empty-message="No results matched your search."
+                                    data-found-prefix="Showing results for “"
+                                    data-found-suffix="”"
+                                >
+                                    {% if search_query %}
+                                        {% if search_results %}
+                                            Showing results for “{{ search_query }}”
+                                        {% else %}
+                                            No results matched your search.
+                                        {% endif %}
+                                    {% else %}
+                                        Start typing to search by name, note, type, or category.
+                                    {% endif %}
+                                </p>
+                                <div
+                                    id="search-results"
+                                    class="flex-grow-1 w-100 overflow-auto"
+                                    style="max-height: 260px;"
+                                >
+                                    {% if search_query %}
+                                        {% include 'expenses/search_results_list.html' with search_results=search_results currency_code=currency_code %}
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -175,8 +212,8 @@
                 <div class="card shadow-sm h-100">
                     <div class="card-body d-flex flex-column gap-3">
                         <div>
-                            <h2 class="h5 mb-1">Quick Actions</h2>
-                            <p class="text-muted small mb-0">
+                            <h2 class="h5 mb-1 text-primary">Quick Actions</h2>
+                            <p class="text-primary small mb-0">
                                 Cycle starts on {{ cycle_display_start|date:'j M Y' }}
                             </p>
                         </div>
@@ -226,8 +263,21 @@
                         <input type="hidden" name="action" value="add_transaction">
                         <input type="hidden" name="type" value="INCOME">
                         <div class="mb-3">
-                            <label class="form-label">Amount (cents)</label>
-                            <input type="number" name="amount_in_cents" class="form-control" min="0" required>
+                            <label class="form-label">Name</label>
+                            <input type="text" name="name" class="form-control" maxlength="120" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Amount ({{ currency_symbol }})</label>
+                            <input
+                                type="number"
+                                name="amount_in_cents"
+                                class="form-control"
+                                min="0"
+                                step="0.01"
+                                max="{{ max_transaction_amount }}"
+                                placeholder="e.g. 125.50"
+                                required
+                            >
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Date</label>
@@ -260,8 +310,21 @@
                         <input type="hidden" name="action" value="add_transaction">
                         <input type="hidden" name="type" value="OUTGO">
                         <div class="mb-3">
-                            <label class="form-label">Amount (cents)</label>
-                            <input type="number" name="amount_in_cents" class="form-control" min="0" required>
+                            <label class="form-label">Name</label>
+                            <input type="text" name="name" class="form-control" maxlength="120" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Amount ({{ currency_symbol }})</label>
+                            <input
+                                type="number"
+                                name="amount_in_cents"
+                                class="form-control"
+                                min="0"
+                                step="0.01"
+                                max="{{ max_transaction_amount }}"
+                                placeholder="e.g. 42.00"
+                                required
+                            >
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Category</label>
@@ -311,7 +374,7 @@
                                 required
                             >
                         </div>
-                        <p class="text-muted small mb-0">
+                        <p class="text-primary small mb-0">
                             This date is used to calculate monthly insights and resets.
                         </p>
                     </div>
@@ -332,74 +395,31 @@
     <!-- Bootstrap bundle provides interactive behaviour (dropdowns, etc.). -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" integrity="sha384-+9QDdy7/1bfFt/+o0ZVoZ0x6z1DhCe8PlH5cxDVT03p3QQASVfzF4pG0dt1q6R5U" crossorigin="anonymous"></script>
-    <script>
-        (function () {
-            const monthsEl = document.getElementById('chart-months');
-            const incomeEl = document.getElementById('chart-income');
-            const expenseEl = document.getElementById('chart-expense');
-            if (!monthsEl || !incomeEl || !expenseEl) {
-                return;
-            }
-
-            const labels = JSON.parse(monthsEl.textContent);
-            const incomeData = JSON.parse(incomeEl.textContent);
-            const expenseData = JSON.parse(expenseEl.textContent);
-
-            const ctx = document.getElementById('monthlyChart');
-            if (!ctx) {
-                return;
-            }
-
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels,
-                    datasets: [
-                        {
-                            label: 'Income',
-                            data: incomeData,
-                            borderColor: 'rgba(59, 130, 246, 1)',
-                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                            tension: 0.3,
-                            fill: true,
-                        },
-                        {
-                            label: 'Expenses',
-                            data: expenseData,
-                            borderColor: 'rgba(239, 68, 68, 1)',
-                            backgroundColor: 'rgba(239, 68, 68, 0.2)',
-                            tension: 0.3,
-                            fill: true,
-                        },
-                    ],
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: (value) => `${value}¢`,
-                            },
-                        },
-                    },
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#fff',
-                            },
-                        },
-                    },
-                },
-            });
-        })();
-    </script>
+    <div
+        class="modal fade"
+        id="transactionModal"
+        tabindex="-1"
+        aria-hidden="true"
+        aria-labelledby="transactionModalLabel"
+    >
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center py-5">
+                    <div class="spinner-border text-primary" role="status" aria-hidden="true"></div>
+                    <p class="mt-3 mb-0">Loading transaction…</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'expenses/dashboard-modal.js' %}"></script>
+    <script src="{% static 'expenses/dashboard-search.js' %}"></script>
+    <script src="{% static 'expenses/dashboard-chart.js' %}"></script>
 {% else %}
     <!-- For anonymous users, bounce them straight to the login screen. -->
-    <script>
-        window.location.href = "{% url 'account_login' %}";
-    </script>
+    <script
+        src="{% static 'expenses/dashboard-login-redirect.js' %}"
+        data-login-url="{% url 'account_login' %}"
+    ></script>
 {% endif %}
 </body>
 </html>

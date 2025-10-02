@@ -1,0 +1,34 @@
+{% load expense_extras %}
+<ul class="list-group list-group-flush">
+    {% if search_results %}
+        {% for result in search_results %}
+            <li class="list-group-item bg-transparent px-0 py-2">
+                <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+                    <div class="flex-grow-1" style="min-width: 0;">
+                        <h3 class="h6 mb-1 text-primary text-truncate">{{ result.name }}</h3>
+                        <div class="small text-primary text-break">
+                            {{ result.occurred_on|date:'d M Y' }} · {{ result.category|default:'Uncategorized' }}
+                            {% if result.note %}<span>— {{ result.note }}</span>{% endif %}
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <span class="fw-semibold d-block {% if result.type == 'OUTGO' %}text-danger{% else %}text-success{% endif %}">
+                            {% if result.type == 'OUTGO' %}-{% else %}+{% endif %}{{ result.amount_in_cents|cents_to_currency:currency_code }}
+                        </span>
+                        <button
+                            type="button"
+                            class="btn btn-link btn-sm p-0 text-decoration-none text-primary js-view-transaction"
+                            data-transaction-url="{% url 'transaction_detail' result.pk %}"
+                        >
+                            View / Edit
+                        </button>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+    {% else %}
+        <li class="list-group-item bg-transparent text-center text-primary py-4">
+            No results matched your search.
+        </li>
+    {% endif %}
+</ul>

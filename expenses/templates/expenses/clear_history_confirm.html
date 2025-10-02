@@ -1,0 +1,54 @@
+{# Confirmation page for clearing a user's transaction history. #}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Clear Transaction History</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'expenses/style.css' %}">
+    <link rel="stylesheet" href="{% static 'expenses/metallic-bg.css' %}">
+</head>
+<body>
+    <nav class="navbar navbar-light bg-light">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand mb-0 h1" href="{% url 'dashboard' %}">Ledgerly</a>
+            <span class="navbar-text">Reset Transaction History</span>
+            <a class="btn btn-outline-secondary btn-sm" href="{% url 'dashboard' %}">Back</a>
+        </div>
+    </nav>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <h1 class="h4 mb-3">Confirm history reset</h1>
+                        <p class="text-primary">
+                            This action permanently deletes all {{ transaction_count }} transaction{% if transaction_count != 1 %}s{% endif %}
+                            associated with your account. Categories and settings remain untouched.
+                        </p>
+                        {% if transaction_count == 0 %}
+                            <div class="alert alert-info alert-dismissible fade show small" role="alert">
+                                Looks like you don't have any transactions yet—there's nothing to clear.
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning alert-dismissible fade show small" role="alert">
+                                This cannot be undone. Export anything important before proceeding.
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endif %}
+                        <form method="post" class="d-flex flex-wrap gap-2 mt-4">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Yes, delete everything</button>
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
