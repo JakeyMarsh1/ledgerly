@@ -50,25 +50,11 @@
         };
     }
 
-    const dateFormatter = new Intl.DateTimeFormat(undefined, {
-        day: '2-digit',
-        month: '2-digit',
-        year: '2-digit',
-    });
-
     const incomeData = incomeRaw.map((value) => value / 100);
     const expenseData = expenseRaw.map((value) => value / 100);
 
     const getDateLabel = (index) => {
-        const label = labels[index];
-        if (!label) {
-            return '';
-        }
-        const parsed = new Date(label);
-        if (Number.isNaN(parsed.getTime())) {
-            return label;
-        }
-        return dateFormatter.format(parsed);
+        return labels[index] ?? '';
     };
 
     const chart = new Chart(ctx, {
@@ -107,6 +93,11 @@
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    bottom: 20,
+                },
+            },
             scales: {
                 y: {
                     beginAtZero: true,

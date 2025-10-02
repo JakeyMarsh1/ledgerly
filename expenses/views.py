@@ -1,7 +1,7 @@
 """Views powering Ledgerly's expense tracking experience."""
 
 from calendar import monthrange
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal, InvalidOperation
 
 from django.contrib import messages
@@ -84,6 +84,7 @@ def dashboard(request):
     else:
         current_cycle_start = cycle_candidate
     next_cycle_start = _cycle_month_shift(current_cycle_start, 1, cycle_day)
+    current_cycle_end = next_cycle_start - timedelta(days=1)
 
     cycle_transactions = transactions.filter(
         occurred_on__gte=current_cycle_start,
@@ -114,6 +115,13 @@ def dashboard(request):
         or 0
     )
     balance = income - outgo
+    total_flow = income + outgo
+    if total_flow > 0:
+        income_percent = round((income / total_flow) * 100, 2)
+        expense_percent = round((outgo / total_flow) * 100, 2)
+    else:
+        income_percent = 0
+        expense_percent = 0
 
     top_spend = (
         cycle_transactions
@@ -234,12 +242,15 @@ def dashboard(request):
         'search_results': search_results,
         'top_expenses': top_expenses,
         'cycle_display_start': current_cycle_start,
+        'cycle_display_end': current_cycle_end,
         'cycle_setting_start': settings_obj.cycle_start_date,
         'currency_code': currency_code,
         'currency_symbol': currency_symbol,
         'max_transaction_amount': str(
             (Decimal(MAX_CENTS) / Decimal(100)).quantize(Decimal('0.00'))
         ),
+        'income_percent': income_percent,
+        'expense_percent': expense_percent,
     }
     return render(request, 'expenses/dashboard.html', context)
 
