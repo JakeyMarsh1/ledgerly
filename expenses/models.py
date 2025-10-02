@@ -1,4 +1,4 @@
-"""Database models for the Ledgerly expenses app."""
+"""I define the database models for the Ledgerly expenses app."""
 
 from datetime import date
 
@@ -9,17 +9,17 @@ from .currencies import CURRENCY_CHOICES, DEFAULT_CURRENCY
 
 
 def default_cycle_start():
-    """Return the first day of the current month for cycle tracking."""
+    """I return the first day of the current month for cycle tracking."""
 
     today = date.today()
     return today.replace(day=1)
 
 
 class Category(models.Model):
-    """User-defined labels applied to transactions (e.g. Groceries)."""
+    """I use user-defined labels to tag transactions (e.g., Groceries)."""
 
     name = models.CharField(max_length=100)
-    # Flag to soft-delete categories without removing historical data.
+    # I use this flag to soft-delete categories without losing history.
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -27,7 +27,7 @@ class Category(models.Model):
 
 
 class Transaction(models.Model):
-    """Single income or outgoing entry recorded by a user."""
+    """I store a single income or outgoing entry recorded by a user."""
 
     INCOME = 'INCOME'
     OUTGO = 'OUTGO'
@@ -36,30 +36,30 @@ class Transaction(models.Model):
         (OUTGO, 'Outgoing'),
     ]
 
-    # Owner of the transaction; cascade delete keeps data scoped to user.
+    # I attach each transaction to a user so cascade deletes stay scoped.
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='transactions',
     )
-    # Optional category to classify the transaction.
+    # I keep an optional category to classify the transaction.
     category = models.ForeignKey(
         Category,
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
     )
-    # Short human-readable label that appears in searches and listings.
+    # I store a short human-readable label for searches and listings.
     name = models.CharField(max_length=120)
-    # Direction of money flow.
+    # I track the direction of the money flow.
     type = models.CharField(max_length=6, choices=TYPE_CHOICES)
-    # Store smallest currency unit to avoid floating point rounding.
+    # I store the smallest currency unit to avoid floating point rounding.
     amount_in_cents = models.PositiveBigIntegerField()
-    # Date the transaction occurred.
+    # I capture the date the transaction occurred.
     occurred_on = models.DateField()
-    # Optional notes for additional context.
+    # I keep optional notes for extra context.
     note = models.TextField(blank=True)
-    # Auditing timestamps managed automatically by Django.
+    # I let Django manage auditing timestamps automatically.
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -71,7 +71,7 @@ class Transaction(models.Model):
 
 
 class UserSettings(models.Model):
-    """Per-user configuration such as the preferred cycle start date."""
+    """I store per-user configuration like the preferred cycle start date."""
 
     user = models.OneToOneField(
         User,

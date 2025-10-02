@@ -1,4 +1,4 @@
-"""Currency helpers and metadata for Ledgerly."""
+"""I keep currency helpers and metadata for Ledgerly here."""
 
 from decimal import Decimal, ROUND_HALF_UP
 from typing import Dict, Iterable, Tuple
@@ -17,23 +17,23 @@ CURRENCY_SYMBOLS: Dict[str, str] = {
     "EUR": "€",
 }
 
-MAX_CENTS = 9_000_000_000_000_00  # 9 trillion in cents/pence.
+MAX_CENTS = 9_000_000_000_000_00  # I cap amounts at nine trillion cents/pence.
 
 
 def get_currency_symbol(code: str) -> str:
-    """Return the symbol for the supplied ISO currency code."""
+    """I return the symbol for the supplied ISO currency code."""
 
     return CURRENCY_SYMBOLS.get(code, CURRENCY_SYMBOLS[DEFAULT_CURRENCY])
 
 
 def quantize_amount(value: Decimal) -> Decimal:
-    """Round a Decimal value to two places using bankers rounding."""
+    """I round a Decimal value to two places using bankers rounding."""
 
     return value.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
 
 def cents_to_display(amount_in_cents: int, currency_code: str) -> str:
-    """Format an integer amount of cents in the user's currency."""
+    """I format an integer amount of cents in the user's currency."""
 
     symbol = get_currency_symbol(currency_code)
     try:
@@ -47,7 +47,7 @@ def cents_to_display(amount_in_cents: int, currency_code: str) -> str:
 
 
 def parse_display_amount_to_cents(amount_str: str) -> int:
-    """Convert a string amount (e.g. "19.99") into integer cents."""
+    """I convert a string amount (e.g. "19.99") into integer cents."""
 
     value = Decimal(amount_str)
     quantized = quantize_amount(value)

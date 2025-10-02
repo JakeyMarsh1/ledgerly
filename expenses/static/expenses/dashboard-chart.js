@@ -53,6 +53,13 @@
     const incomeData = incomeRaw.map((value) => value / 100);
     const expenseData = expenseRaw.map((value) => value / 100);
 
+    const commonLength = Math.min(labels.length, incomeData.length, expenseData.length);
+    if (commonLength < labels.length) {
+        labels.length = commonLength;
+    }
+    incomeData.length = commonLength;
+    expenseData.length = commonLength;
+
     const getDateLabel = (index) => {
         return labels[index] ?? '';
     };
@@ -95,21 +102,31 @@
             maintainAspectRatio: false,
             layout: {
                 padding: {
+                    top: 12,
                     bottom: 20,
+                    left: 16,
+                    right: 16,
                 },
             },
             scales: {
                 y: {
                     beginAtZero: true,
+                    grace: '10%',
                     ticks: {
+                        padding: 8,
                         callback: (value) => currencyFormatter.format(value),
                     },
                 },
                 x: {
                     ticks: {
+                        padding: 8,
                         callback: (value, index) => getDateLabel(index),
                         maxRotation: 0,
                         autoSkip: true,
+                        autoSkipPadding: 16,
+                    },
+                    grid: {
+                        display: false,
                     },
                 },
             },

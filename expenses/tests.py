@@ -1,4 +1,4 @@
-"""Regression tests for Ledgerly's transaction flows."""
+"""I cover regression tests for Ledgerly's transaction flows."""
 
 from datetime import date
 
@@ -10,7 +10,7 @@ from .models import Category, Transaction, UserSettings
 
 
 class TransactionFlowTests(TestCase):
-    """Exercise dashboard search, detail editing, and deletion flows."""
+    """I exercise dashboard search, detail editing, and deletion flows."""
 
     def setUp(self):
         self.user = User.objects.create_user(
@@ -27,7 +27,7 @@ class TransactionFlowTests(TestCase):
         self.assertTrue(logged_in)
 
     def test_dashboard_search_matches_transaction_name(self):
-        """Searching should match against the transaction name field."""
+        """I expect searching to match against the transaction name field."""
 
         Transaction.objects.create(
             user=self.user,
@@ -45,7 +45,7 @@ class TransactionFlowTests(TestCase):
         self.assertContains(response, 'Laptop Purchase')
 
     def test_transaction_detail_allows_updates(self):
-        """Users can update transaction fields via the detail view."""
+        """I expect users to update transaction fields via the detail view."""
 
         transaction = Transaction.objects.create(
             user=self.user,
@@ -85,7 +85,7 @@ class TransactionFlowTests(TestCase):
         )
 
     def test_transaction_detail_modal_get(self):
-        """AJAX GET returns modal-friendly HTML content."""
+        """I expect an AJAX GET to return modal-friendly HTML content."""
 
         transaction = Transaction.objects.create(
             user=self.user,
@@ -106,7 +106,7 @@ class TransactionFlowTests(TestCase):
         self.assertIn('Edit Transaction', response.content.decode())
 
     def test_transaction_delete_flow(self):
-        """Posting to the delete view removes the transaction."""
+        """I expect posting to the delete view to remove the transaction."""
 
         transaction = Transaction.objects.create(
             user=self.user,
@@ -132,7 +132,7 @@ class TransactionFlowTests(TestCase):
         )
 
     def test_transaction_calendar_endpoint_returns_month_data(self):
-        """Calendar endpoint returns grouped transactions for the month."""
+        """I expect the calendar endpoint to return grouped monthly data."""
 
         Transaction.objects.create(
             user=self.user,
@@ -169,14 +169,14 @@ class TransactionFlowTests(TestCase):
         self.assertEqual(len(days_by_date['2025-09-05']['transactions']), 2)
 
     def test_transaction_calendar_requires_login(self):
-        """Anonymous users should be redirected to log in."""
+        """I expect anonymous users to be redirected to log in."""
 
         response = self.client.get(reverse('transaction_calendar_data'))
         self.assertEqual(response.status_code, 302)
         self.assertIn('/accounts/login/', response['Location'])
 
     def test_clear_history_removes_user_transactions(self):
-        """Clearing history deletes only the logged-in user's transactions."""
+        """I expect clearing history to delete only this user's data."""
 
         Transaction.objects.create(
             user=self.user,
@@ -216,7 +216,7 @@ class TransactionFlowTests(TestCase):
         )
 
     def test_transaction_suggestions_endpoint(self):
-        """Suggestions endpoint returns matching names and categories."""
+        """I expect suggestions to return matching names and categories."""
 
         Transaction.objects.create(
             user=self.user,
@@ -245,10 +245,10 @@ class TransactionFlowTests(TestCase):
         )
 
     def test_dashboard_accepts_large_amounts(self):
-        """Submitting a large transaction remains within storage limits."""
+        """I expect a large submission to stay within storage limits."""
 
         self._login()
-        mega_amount = '5000000000000.00'  # $5 trillion
+        mega_amount = '5000000000000.00'  # I treat this as $5 trillion.
         response = self.client.post(
             reverse('dashboard'),
             {
@@ -267,7 +267,7 @@ class TransactionFlowTests(TestCase):
         self.assertEqual(txn.amount_in_cents, 500000000000000)
 
     def test_currency_settings_update_changes_symbol(self):
-        """Users can change their preferred currency from the settings page."""
+        """I expect users to change their preferred currency from settings."""
 
         self._login()
         settings, _ = UserSettings.objects.get_or_create(user=self.user)
@@ -290,7 +290,7 @@ class TransactionFlowTests(TestCase):
         self.assertEqual(settings.currency_code, 'GBP')
 
     def test_transaction_detail_form_shows_decimal_amount(self):
-        """Edit form should display amount formatted as decimal units."""
+        """I expect the edit form to display amounts in decimal units."""
 
         transaction = Transaction.objects.create(
             user=self.user,
@@ -308,7 +308,7 @@ class TransactionFlowTests(TestCase):
         self.assertContains(response, '123.45')
 
     def test_transaction_search_results_endpoint_returns_html(self):
-        """Search results endpoint should render matching transactions."""
+        """I expect the search results endpoint to render matches."""
 
         Transaction.objects.create(
             user=self.user,
@@ -332,7 +332,7 @@ class TransactionFlowTests(TestCase):
         self.assertIn('Laptop Purchase', data['html'])
 
     def test_transaction_search_results_endpoint_handles_empty_query(self):
-        """Empty search queries should return no results."""
+        """I expect empty search queries to return no results."""
 
         self._login()
         response = self.client.get(

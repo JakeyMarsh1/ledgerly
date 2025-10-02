@@ -1,4 +1,4 @@
-{# Load crispy-forms helpers plus access to static assets. #}
+{# I load crispy-forms helpers and make static files available here. #}
 {% load crispy_forms_tags %}
 {% load static %}
 {% load expense_extras %}
@@ -6,36 +6,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Title used in the browser tab. -->
+    <!-- I set the browser tab title here. -->
     <title>Expenses Dashboard</title>
-    <!-- Bootstrap CSS for responsive layout/widgets. -->
+    <!-- I pull in Bootstrap for the responsive layout and widgets. -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom styles for Ledgerly UI. -->
+    <!-- I load my Ledgerly UI styles. -->
     <link rel="stylesheet" href="{% static 'expenses/style.css' %}">
     <link rel="stylesheet" href="{% static 'expenses/metallic-bg.css' %}">
 </head>
 <body>
 {% if user.is_authenticated %}
-    <!-- Primary dashboard shown only to authenticated users. -->
+    <!-- I only render the main dashboard for authenticated users. -->
     <nav class="navbar navbar-light bg-light">
         <div class="container d-flex align-items-center gap-4">
             <a class="navbar-brand mb-0 h1" href="{% url 'dashboard' %}">Ledgerly</a>
             <div class="ms-auto d-flex align-items-center gap-3">
                 <span class="navbar-text mb-0 text-nowrap">Welcome, {{ user.username }}!</span>
                 <div class="dropdown">
-                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                    Account
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                    <li><a class="dropdown-item" href="{% url 'account_change_password' %}">Change Password</a></li>
-                    <li><a class="dropdown-item" href="{% url 'account_email' %}">Email Settings</a></li>
-                    <li><a class="dropdown-item" href="{% url 'account_currency_settings' %}">Currency Settings</a></li>
-                    <li><a class="dropdown-item text-danger" href="{% url 'account_clear_history' %}">Clear History</a></li>
-                    <li><a class="dropdown-item text-danger" href="{% url 'account_delete' %}">Delete Account</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="{% url 'account_logout' %}">Logout</a></li>
-                </ul>
-            </div>
+                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                        Account
+                    </button>
+                    {% include 'includes/account_dropdown.html' %}
+                </div>
             </div>
         </div>
     </nav>
@@ -55,16 +47,16 @@
             </div>
         {% endif %}
         <div class="row g-4 align-items-stretch">
-            <div class="col-lg-6">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body d-flex flex-column">
+            <div class="col-lg-6 d-flex">
+                <div class="card shadow-sm flex-fill d-flex flex-column">
+                    <div class="card-body d-flex flex-column flex-grow-1">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <h2 class="h5 mb-0">Income vs Expenses</h2>
                             <span class="badge bg-primary">Last 12 Months</span>
                         </div>
                         <div class="chart-wrapper rounded flex-grow-1 overflow-hidden d-flex flex-column">
                             <div id="monthlyChartLegend" class="chart-legend d-flex justify-content-center align-items-center"></div>
-                            <div class="flex-grow-1 position-relative pb-3">
+                            <div class="flex-grow-1 position-relative">
                                 <canvas
                                     id="monthlyChart"
                                     aria-label="Monthly income versus expenses"
@@ -78,21 +70,21 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6">
-                <div class="row g-4 h-100">
-                    <div class="col-12 col-lg-4">
-                        <div class="card shadow-sm h-100">
+            <div class="col-lg-6 d-flex flex-column">
+                <div class="row g-4 flex-grow-1">
+                    <div class="col-12 col-lg-4 d-flex">
+                        <div class="card shadow-sm h-100 flex-fill">
                             <div class="card-body d-flex flex-column">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h2 class="h5 mb-0 text-primary">Spend History</h2>
                                 </div>
                                 <p class="text-primary small mb-3">Latest 15 transactions</p>
-                                <div class="flex-grow-1 overflow-auto" style="max-height: 320px;">
+                                <div class="flex-grow-1 dashboard-scroll-320">
                                     <ul class="list-group list-group-flush">
                                         {% for t in transactions %}
                                             <li class="list-group-item bg-transparent px-0 py-2">
                                                 <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
-                                                    <div class="flex-grow-1" style="min-width: 0;">
+                                                    <div class="flex-grow-1 min-w-0">
                                                         <h3 class="h6 mb-1 text-primary text-truncate">{{ t.name }}</h3>
                                                         <div class="small text-primary text-break">
                                                             {{ t.occurred_on|date:'d M Y' }} · {{ t.category|default:'Uncategorized' }}
@@ -116,16 +108,16 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-4">
-                        <div class="card shadow-sm h-100">
+                    <div class="col-12 col-lg-4 d-flex">
+                        <div class="card shadow-sm h-100 flex-fill">
                             <div class="card-body d-flex flex-column">
                                 <h2 class="h5 mb-3 text-primary">Top Expenses</h2>
-                                <div class="flex-grow-1 overflow-auto mt-2" style="max-height: 320px;">
+                                <div class="flex-grow-1 dashboard-scroll-320 mt-2">
                                     <ul class="list-group list-group-flush">
                                         {% for expense in top_expenses %}
                                             <li class="list-group-item bg-transparent px-0 py-2">
                                                 <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
-                                                    <div class="flex-grow-1" style="min-width: 0;">
+                                                    <div class="flex-grow-1 min-w-0">
                                                         <h3 class="h6 mb-1 text-primary text-truncate">{{ expense.name }}</h3>
                                                         <div class="small text-primary text-break">
                                                             {{ expense.occurred_on|date:'d M Y' }} · {{ expense.category|default:'Uncategorized' }}
@@ -147,8 +139,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-4">
-                        <div class="card shadow-sm h-100">
+                    <div class="col-12 col-lg-4 d-flex">
+                        <div class="card shadow-sm h-100 flex-fill">
                             <div class="card-body d-flex flex-column align-items-stretch">
                                 <h2 class="h5 mb-3 text-primary">Search</h2>
                                 <form
@@ -173,8 +165,7 @@
                                 </form>
                                 <div
                                     id="search-results"
-                                    class="flex-grow-1 w-100 overflow-auto mt-2"
-                                    style="max-height: 260px;"
+                                    class="flex-grow-1 w-100 dashboard-scroll-260 mt-2"
                                 >
                                     {% if search_query %}
                                         {% include 'expenses/search_results_list.html' with search_results=search_results currency_code=currency_code %}
@@ -234,32 +225,32 @@
             <div class="col-lg-6">
                 <div class="card shadow-sm h-100">
                     <div class="card-body d-flex flex-column gap-3">
-                                <div class="d-flex justify-content-between align-items-center gap-2">
-                                    <h2 class="h5 mb-0 text-primary">Quick Actions</h2>
-                                    <button
-                                        type="button"
-                                        class="btn btn-outline-primary btn-sm d-flex align-items-center gap-2 ms-auto"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#transactionCalendarModal"
-                                        aria-label="Open transaction calendar"
-                                    >
-                                        <svg
-                                            class="calendar-button-icon"
-                                            width="18"
-                                            height="18"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            aria-hidden="true"
-                                        >
-                                            <rect x="3" y="4" width="18" height="17" rx="3" ry="3" stroke="currentColor" stroke-width="1.5" />
-                                            <path d="M3 10H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                                            <path d="M8 3V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                                            <path d="M16 3V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                                        </svg>
-                                        <span class="fw-semibold d-none d-sm-inline">Calendar</span>
-                                    </button>
-                                </div>
+                        <div class="d-flex justify-content-between align-items-center gap-2">
+                            <h2 class="h5 mb-0 text-primary">Quick Actions</h2>
+                            <button
+                                type="button"
+                                class="btn btn-outline-primary btn-sm d-flex align-items-center gap-2 ms-auto"
+                                data-bs-toggle="modal"
+                                data-bs-target="#transactionCalendarModal"
+                                aria-label="Open transaction calendar"
+                            >
+                                <svg
+                                    class="calendar-button-icon"
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    aria-hidden="true"
+                                >
+                                    <rect x="3" y="4" width="18" height="17" rx="3" ry="3" stroke="currentColor" stroke-width="1.5" />
+                                    <path d="M3 10H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                    <path d="M8 3V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                    <path d="M16 3V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                </svg>
+                                <span class="fw-semibold d-none d-sm-inline">Calendar</span>
+                            </button>
+                        </div>
                         <div class="d-flex flex-wrap gap-3 mt-auto">
                             <button
                                 type="button"
@@ -292,7 +283,7 @@
         </div>
     </div>
 
-    <!-- Quick Action Modals -->
+    <!-- Quick action modals I reuse throughout the dashboard. -->
     <div class="modal fade" id="addIncomeModal" tabindex="-1" aria-labelledby="addIncomeModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -489,7 +480,13 @@
                                 </div>
                             </div>
                             <div class="calendar-transactions__list position-relative">
-                                <div class="js-calendar-empty text-secondary text-center py-4">No transactions for this date yet.</div>
+                                <div
+                                    class="js-calendar-empty text-secondary text-center py-4"
+                                    data-default-message="No transactions for this date yet."
+                                    data-prompt-message="Select a date to review transactions."
+                                >
+                                    Select a date to review transactions.
+                                </div>
                                 <ul class="list-group list-group-flush js-calendar-transaction-list small d-none"></ul>
                             </div>
                         </div>
@@ -504,7 +501,7 @@
         {{ income_data|json_script:"chart-income" }}
         {{ expense_data|json_script:"chart-expense" }}
     {% endif %}
-    <!-- Bootstrap bundle provides interactive behaviour (dropdowns, etc.). -->
+    <!-- I rely on the Bootstrap bundle for dropdowns and other interactions. -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" integrity="sha384-NrKB+u6Ts6AtkIhwPixiKTzgSKNblyhlk0Sohlgar9UHUBzai/sgnNNWWd291xqt" crossorigin="anonymous"></script>
     <div
@@ -528,7 +525,7 @@
     <script src="{% static 'expenses/dashboard-calendar.js' %}"></script>
     <script src="{% static 'expenses/dashboard-chart.js' %}"></script>
 {% else %}
-    <!-- For anonymous users, bounce them straight to the login screen. -->
+    <!-- If a visitor isn't authenticated, I send them to the login screen. -->
     <script
         src="{% static 'expenses/dashboard-login-redirect.js' %}"
         data-login-url="{% url 'account_login' %}"

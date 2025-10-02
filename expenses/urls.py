@@ -1,4 +1,4 @@
-"""App-specific URL patterns for expenses views."""
+"""I define the app-specific URL patterns for the expenses views."""
 
 from django.urls import path
 
@@ -9,17 +9,17 @@ app_name = 'expenses'
 
 
 urlpatterns = [
-    # Dashboard combines quick stats, charts, and transaction capture.
+    # I route the dashboard that combines quick stats, charts, and capture.
     path('', views.dashboard, name='dashboard'),
-    # Dedicated list page to scroll through historical transactions.
+    # I route to the dedicated list page for historical transactions.
     path('transactions/', views.transaction_list, name='transaction_list'),
-    # Detail page for inspecting and editing a single transaction.
+    # I route to the detail page for inspecting and editing a transaction.
     path(
         'transactions/<int:pk>/',
         views.transaction_detail,
         name='transaction_detail',
     ),
-    # Confirmation screen prior to deleting a transaction.
+    # I route to the confirmation screen before deleting a transaction.
     path(
         'transactions/<int:pk>/delete/',
         views.transaction_delete,

@@ -1,8 +1,9 @@
-"""Views powering Ledgerly's expense tracking experience."""
+"""All of my Ledgerly expense views live together in this module."""
 
 from calendar import monthrange
 from datetime import date, timedelta
 from decimal import Decimal, InvalidOperation
+from typing import Tuple
 
 from django.contrib import messages
 from django.contrib.auth import logout
@@ -27,13 +28,13 @@ from .models import Category, Transaction, UserSettings
 
 
 def _is_ajax(request) -> bool:
-    """Return ``True`` when the request originated from an AJAX call."""
+    """Return ``True`` when I can tell the request came from AJAX."""
 
     return request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
 
 def _filter_transactions(queryset, search_query):
-    """Apply case-insensitive filtering across transaction fields."""
+    """Run the search term across my transaction fields, ignoring case."""
 
     if not search_query:
         return queryset
@@ -47,7 +48,7 @@ def _filter_transactions(queryset, search_query):
 
 
 def _cycle_month_shift(reference: date, months: int, cycle_day: int) -> date:
-    """Shift ``reference`` by whole months while keeping the cycle day."""
+    """Shift a reference date by whole months while keeping my cycle day."""
 
     year = reference.year + (reference.month - 1 + months) // 12
     month = (reference.month - 1 + months) % 12 + 1
@@ -55,31 +56,49 @@ def _cycle_month_shift(reference: date, months: int, cycle_day: int) -> date:
     return date(year, month, day)
 
 
-@login_required
-def dashboard(request):
-    """Render the main dashboard with transaction form and monthly stats."""
+def _user_transactions(user) -> models.QuerySet:
+    """Return the transaction queryset I scope to the incoming user."""
 
-    # Only show active categories so users can classify transactions.
-    categories = Category.objects.filter(is_active=True)
+    return Transaction.objects.filter(user=user)
 
-    # Persist per-user configuration such as cycle start date.
-    settings_obj, _ = UserSettings.objects.get_or_create(user=request.user)
+
+def _get_user_settings_details(user) -> Tuple[UserSettings, str, str]:
+    """Fetch my user settings record plus the resolved currency details."""
+
+    settings_obj, _ = UserSettings.objects.get_or_create(user=user)
     currency_code = settings_obj.currency_code or DEFAULT_CURRENCY
     currency_symbol = get_currency_symbol(currency_code)
+    return settings_obj, currency_code, currency_symbol
 
-    # Limit transactions to the logged-in user for data isolation.
-    transactions = (
-        Transaction.objects
-        .filter(user=request.user)
-        .order_by('-occurred_on')
+
+def _max_transaction_amount_display() -> str:
+    """Return the largest transaction amount I allow, formatted for display."""
+
+    return str((Decimal(MAX_CENTS) / Decimal(100)).quantize(Decimal('0.00')))
+
+
+@login_required
+def dashboard(request):
+    """Render my dashboard with the transaction form and monthly stats."""
+
+    # I only surface active categories so I can tag transactions cleanly.
+    categories = Category.objects.filter(is_active=True)
+
+    # I pull the user's configuration, including their cycle anchor day.
+    settings_obj, currency_code, currency_symbol = _get_user_settings_details(
+        request.user
     )
 
-    # Calculate cycle-aware stats based on the configured cycle start day.
+    # I always scope transactions to the signed-in user.
+    transactions = _user_transactions(request.user).order_by('-occurred_on')
+
+    # I calculate cycle-aware stats using the user's configured start day.
     today = timezone.localdate()
-    if settings_obj.cycle_start_date:
-        cycle_day = settings_obj.cycle_start_date.day
-    else:
-        cycle_day = 1
+    cycle_day = (
+        settings_obj.cycle_start_date.day
+        if settings_obj.cycle_start_date
+        else 1
+    )
     cycle_candidate = _cycle_month_shift(today, 0, cycle_day)
     if cycle_candidate > today:
         current_cycle_start = _cycle_month_shift(today, -1, cycle_day)
@@ -99,7 +118,7 @@ def dashboard(request):
         or 0
     )
 
-    # Allow quick filtering from the dashboard search box.
+    # I let the dashboard search box filter transactions on the fly.
     search_query = request.GET.get('q', '').strip()
     filtered_transactions = _filter_transactions(transactions, search_query)
 
@@ -132,7 +151,8 @@ def dashboard(request):
         .first()
     )
 
-    # Build cycle labels and totals for the past 12 cycles (oldest -> newest).
+    # I build cycle labels and totals for the past 12 cycles
+    # (oldest -> newest).
     cycle_starts = [
         _cycle_month_shift(current_cycle_start, -offset, cycle_day)
         for offset in range(11, -1, -1)
@@ -157,26 +177,63 @@ def dashboard(request):
         expense_data.append(window_totals['expense_total'] or 0)
 
     if request.method == 'POST':
-        # Determine which inline modal submitted the request.
+        # I figure out which inline modal kicked off the submission.
         action = request.POST.get('action', 'add_transaction')
 
         if action == 'update_cycle_start':
             cycle_start_raw = request.POST.get('cycle_start_date')
             if cycle_start_raw:
-                # Store the user's preferred cycle anchor day
-                # so future queries align with their reporting window.
-                settings_obj.cycle_start_date = cycle_start_raw
+                try:
+                    cycle_start_date = date.fromisoformat(cycle_start_raw)
+                except ValueError:
+                    messages.error(
+                        request,
+                        'Please provide a valid cycle start date.',
+                    )
+                    return redirect('dashboard')
+
+                # I store the user's preferred cycle anchor day so future
+                # queries stay aligned with their reporting window.
+                settings_obj.cycle_start_date = cycle_start_date
                 settings_obj.save(update_fields=['cycle_start_date'])
+                messages.success(
+                    request,
+                    'Cycle start updated successfully.'
+                )
             return redirect('dashboard')
 
-        # Default: persist the new transaction from the submitted form.
-        # Missing category values are stored as NULL to keep records flexible.
+        # Otherwise I persist the new transaction from the submitted form.
+        # I still allow missing categories and store them as NULL for
+        # flexibility.
+        transaction_type = (request.POST.get('type') or '').upper()
+        if transaction_type not in {'INCOME', 'OUTGO'}:
+            messages.error(
+                request,
+                'Please choose whether this entry is income or an expense.',
+            )
+            return redirect('dashboard')
+
         category_id = request.POST.get('category') or None
-        if request.POST['type'] == 'OUTGO' and category_id is None:
+        if transaction_type == 'OUTGO' and category_id is None:
             messages.error(
                 request,
                 'Outgoing transactions require a category. '
                 'Please choose one before saving.',
+            )
+            return redirect('dashboard')
+
+        name = (request.POST.get('name') or '').strip()
+        if not name:
+            messages.error(request, 'Please enter a name for the transaction.')
+            return redirect('dashboard')
+
+        occurred_on_raw = request.POST.get('occurred_on')
+        try:
+            occurred_on = date.fromisoformat(occurred_on_raw)
+        except (TypeError, ValueError):
+            messages.error(
+                request,
+                'Please select a valid date before saving the transaction.',
             )
             return redirect('dashboard')
 
@@ -213,25 +270,24 @@ def dashboard(request):
 
         Transaction.objects.create(
             user=request.user,
-            name=request.POST['name'],
-            type=request.POST['type'],
+            name=name,
+            type=transaction_type,
             amount_in_cents=amount_cents,
             category_id=category_id,
-            occurred_on=request.POST['occurred_on'],
+            occurred_on=occurred_on,
             note=request.POST.get('note', ''),
         )
-        messages.success(
-            request,
-            'Income saved successfully.'
-            if request.POST['type'] == 'INCOME'
-            else 'Expense saved successfully.',
-        )
+        success_messages = {
+            'INCOME': 'Income saved successfully.',
+            'OUTGO': 'Expense saved successfully.',
+        }
+        messages.success(request, success_messages[transaction_type])
         return redirect('dashboard')
 
     context = {
-        # Pass full category list to the form.
+        # I pass the full category list to the form.
         'categories': categories,
-        # Show the 10 most recent transactions on the dashboard.
+        # I show the 10 most recent transactions on the dashboard.
         'transactions': spend_history,
         'income': income,
         'outgo': outgo,
@@ -248,9 +304,7 @@ def dashboard(request):
         'cycle_setting_start': settings_obj.cycle_start_date,
         'currency_code': currency_code,
         'currency_symbol': currency_symbol,
-        'max_transaction_amount': str(
-            (Decimal(MAX_CENTS) / Decimal(100)).quantize(Decimal('0.00'))
-        ),
+        'max_transaction_amount': _max_transaction_amount_display(),
         'income_percent': income_percent,
         'expense_percent': expense_percent,
     }
@@ -259,16 +313,12 @@ def dashboard(request):
 
 @login_required
 def transaction_list(request):
-    """Show the full history of a user's transactions."""
+    """I show the full history of the signed-in user's transactions."""
 
-    transactions = (
-        Transaction.objects
-        .filter(user=request.user)
-        .order_by('-occurred_on')
+    transactions = _user_transactions(request.user).order_by('-occurred_on')
+    _, currency_code, currency_symbol = _get_user_settings_details(
+        request.user
     )
-    settings_obj, _ = UserSettings.objects.get_or_create(user=request.user)
-    currency_code = settings_obj.currency_code or DEFAULT_CURRENCY
-    currency_symbol = get_currency_symbol(currency_code)
     return render(request, 'expenses/transaction_list.html', {
         'transactions': transactions,
         'currency_code': currency_code,
@@ -278,16 +328,16 @@ def transaction_list(request):
 
 @login_required
 def transaction_detail(request, pk):
-    """Display and allow editing of a single transaction."""
+    """I display and let the user edit a single transaction."""
 
     transaction = get_object_or_404(
         Transaction, pk=pk, user=request.user
     )
 
     ajax = _is_ajax(request)
-    settings_obj, _ = UserSettings.objects.get_or_create(user=request.user)
-    currency_code = settings_obj.currency_code or DEFAULT_CURRENCY
-    currency_symbol = get_currency_symbol(currency_code)
+    _, currency_code, currency_symbol = _get_user_settings_details(
+        request.user
+    )
 
     if request.method == 'POST':
         form = TransactionForm(
@@ -346,14 +396,14 @@ def transaction_detail(request, pk):
 
 @login_required
 def transaction_delete(request, pk):
-    """Ask for confirmation before deleting a transaction."""
+    """I ask for confirmation before removing a transaction."""
 
     transaction = get_object_or_404(
         Transaction, pk=pk, user=request.user
     )
-    settings_obj, _ = UserSettings.objects.get_or_create(user=request.user)
-    currency_code = settings_obj.currency_code or DEFAULT_CURRENCY
-    currency_symbol = get_currency_symbol(currency_code)
+    _, currency_code, currency_symbol = _get_user_settings_details(
+        request.user
+    )
 
     if request.method == 'POST':
         transaction.delete()
@@ -373,7 +423,7 @@ def transaction_delete(request, pk):
 
 @login_required
 def transaction_calendar_data(request):
-    """Return month-level transaction details for the calendar modal."""
+    """I return month-level transaction details for the calendar modal."""
 
     today = timezone.localdate()
     year_param = request.GET.get('year')
@@ -406,13 +456,13 @@ def transaction_calendar_data(request):
     end_date = date(year, month, days_in_month)
     next_month = end_date + timedelta(days=1)
 
-    settings_obj, _ = UserSettings.objects.get_or_create(user=request.user)
-    currency_code = settings_obj.currency_code or DEFAULT_CURRENCY
+    _, currency_code, currency_symbol = _get_user_settings_details(
+        request.user
+    )
 
     month_transactions = (
-        Transaction.objects
+        _user_transactions(request.user)
         .filter(
-            user=request.user,
             occurred_on__gte=start_date,
             occurred_on__lt=next_month,
         )
@@ -460,14 +510,14 @@ def transaction_calendar_data(request):
         'month': month,
         'month_label': start_date.strftime('%B %Y'),
         'days': days,
-        'currency_symbol': get_currency_symbol(currency_code),
+        'currency_symbol': currency_symbol,
         'today': today_iso,
         'initial_date': initial_date,
     })
 
 
 def custom_logout(request):
-    """Log the user out and send them back to the login page."""
+    """I log the user out and send them back to the login page."""
 
     logout(request)
     return redirect('account_login')
@@ -475,12 +525,12 @@ def custom_logout(request):
 
 @login_required
 def delete_account(request):
-    """Ask for confirmation, then delete the user's account."""
+    """I ask for confirmation and then delete the user's account."""
 
     if request.method == 'POST':
         user = request.user
         username = user.username
-        # Log the session out first so related auth data clears cleanly.
+    # I log the session out first so the auth data clears cleanly.
         logout(request)
         user.delete()
         return render(
@@ -494,12 +544,13 @@ def delete_account(request):
 
 @login_required
 def clear_history(request):
-    """Provide a confirmation screen before wiping transaction history."""
+    """I provide a confirmation screen before wiping transaction history."""
 
-    transaction_count = Transaction.objects.filter(user=request.user).count()
+    user_transactions = _user_transactions(request.user)
+    transaction_count = user_transactions.count()
 
     if request.method == 'POST':
-        Transaction.objects.filter(user=request.user).delete()
+        user_transactions.delete()
         messages.success(
             request,
             'Transaction history cleared. Enjoy the fresh start!'
@@ -515,19 +566,14 @@ def clear_history(request):
 
 @login_required
 def transaction_search_results(request):
-    """Return rendered search results for the dashboard search column."""
+    """I return rendered search results for the dashboard search column."""
 
     query = request.GET.get('q', '').strip()
     if not query:
         return JsonResponse({'html': '', 'count': 0})
 
-    settings_obj, _ = UserSettings.objects.get_or_create(user=request.user)
-    currency_code = settings_obj.currency_code or DEFAULT_CURRENCY
-    transactions = (
-        Transaction.objects
-        .filter(user=request.user)
-        .order_by('-occurred_on')
-    )
+    _, currency_code, _ = _get_user_settings_details(request.user)
+    transactions = _user_transactions(request.user).order_by('-occurred_on')
     filtered = _filter_transactions(transactions, query)
     search_results = list(filtered[:10])
 
@@ -549,15 +595,15 @@ def transaction_search_results(request):
 
 @login_required
 def transaction_suggestions(request):
-    """Return transaction/category suggestions that match the query."""
+    """I return transaction or category suggestions that match the query."""
 
     query = request.GET.get('q', '').strip()
     if not query:
         return JsonResponse({'suggestions': []})
 
     name_matches = (
-        Transaction.objects
-        .filter(user=request.user, name__icontains=query)
+        _user_transactions(request.user)
+        .filter(name__icontains=query)
         .exclude(name='')
         .values_list('name', flat=True)
         .distinct()
@@ -578,9 +624,9 @@ def transaction_suggestions(request):
 
 @login_required
 def currency_settings(request):
-    """Allow users to update their preferred currency."""
+    """I let users update their preferred currency."""
 
-    settings_obj, _ = UserSettings.objects.get_or_create(user=request.user)
+    settings_obj, _, _ = _get_user_settings_details(request.user)
     if request.method == 'POST':
         form = CurrencySettingsForm(request.POST, instance=settings_obj)
         if form.is_valid():

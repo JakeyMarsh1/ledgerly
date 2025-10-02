@@ -1,0 +1,31 @@
+{% with current=request.resolver_match.url_name %}
+<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+    {% if current != 'dashboard' %}
+        <li><a class="dropdown-item" href="{% url 'dashboard' %}">Dashboard</a></li>
+    {% endif %}
+    {% if current != 'transaction_list' %}
+        <li><a class="dropdown-item" href="{% url 'transaction_list' %}">Transaction History</a></li>
+    {% endif %}
+
+    <li><hr class="dropdown-divider"></li>
+
+    {% if current != 'account_change_password' %}
+        <li><a class="dropdown-item" href="{% url 'account_change_password' %}">Change Password</a></li>
+    {% endif %}
+    {% if current != 'account_email' %}
+        <li><a class="dropdown-item" href="{% url 'account_email' %}">Email Settings</a></li>
+    {% endif %}
+    {% if current != 'account_currency_settings' %}
+        <li><a class="dropdown-item" href="{% url 'account_currency_settings' %}">Currency Settings</a></li>
+    {% endif %}
+    {% if current != 'account_clear_history' %}
+        <li><a class="dropdown-item text-danger" href="{% url 'account_clear_history' %}">Clear History</a></li>
+    {% endif %}
+    {% if current != 'account_delete' %}
+        <li><a class="dropdown-item text-danger" href="{% url 'account_delete' %}">Delete Account</a></li>
+    {% endif %}
+
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="{% url 'account_logout' %}">Logout</a></li>
+</ul>
+{% endwith %}

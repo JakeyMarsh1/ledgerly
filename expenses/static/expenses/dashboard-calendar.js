@@ -41,11 +41,18 @@
     let currentYear;
     let currentMonth;
     let selectedDate = null;
-        let calendarData = new Map();
-        let dayButtons = new Map();
+    let calendarData = new Map();
+    let dayButtons = new Map();
     let todayIso = '';
     let isLoadingMonth = false;
     let hasLoadedOnce = false;
+
+    const emptyDefaultMessage = (
+        emptyStateEl.dataset.defaultMessage || emptyStateEl.textContent || ''
+    );
+    const emptyPromptMessage = (
+        emptyStateEl.dataset.promptMessage || emptyDefaultMessage
+    );
 
     const monthFormatter = new Intl.DateTimeFormat(undefined, {
         month: 'long',
@@ -94,11 +101,16 @@
         }
 
         const parts = (dateKey || '').split('-').map(Number);
-        if (parts.length === 3 && parts.every((value) => !Number.isNaN(value))) {
+        if (!dateKey) {
+            selectedDateEl.textContent = 'Select a date';
+        } else if (
+            parts.length === 3 &&
+            parts.every((value) => !Number.isNaN(value))
+        ) {
             const displayDate = new Date(parts[0], parts[1] - 1, parts[2]);
             selectedDateEl.textContent = dateFormatter.format(displayDate);
         } else {
-            selectedDateEl.textContent = dateKey || '—';
+            selectedDateEl.textContent = dateKey;
         }
 
         addIncomeButton.disabled = !dateKey;
@@ -121,11 +133,15 @@
         }
 
         if (!transactions.length) {
+            emptyStateEl.textContent = dateKey
+                ? emptyDefaultMessage
+                : emptyPromptMessage;
             transactionsListEl.classList.add('d-none');
             emptyStateEl.classList.remove('d-none');
             return;
         }
 
+        emptyStateEl.textContent = emptyDefaultMessage;
         emptyStateEl.classList.add('d-none');
         transactionsListEl.classList.remove('d-none');
 
@@ -186,15 +202,27 @@
         });
     };
 
-    const selectDate = (dateKey) => {
+    const clearSelection = () => {
+        selectedDate = null;
+        dayButtons.forEach((button) => {
+            button.classList.remove('is-selected');
+            button.setAttribute('aria-pressed', 'false');
+        });
+        renderTransactions(null);
+    };
+
+    const selectDate = (dateKey, fallback = true) => {
         if (!dateKey || !dayButtons.has(dateKey)) {
-            const iterator = dayButtons.keys().next();
-            if (iterator.done) {
-                selectedDate = null;
-                renderTransactions(null);
-                return;
+            if (fallback) {
+                const iterator = dayButtons.keys().next();
+                if (iterator.done) {
+                    clearSelection();
+                    return;
+                }
+                selectDate(iterator.value, false);
+            } else {
+                clearSelection();
             }
-            selectDate(iterator.value);
             return;
         }
 
@@ -290,19 +318,18 @@
 
         renderCalendar();
 
-        let initialDate = data.initial_date;
         const monthPrefix = `${currentYear}-${pad(currentMonth)}`;
-        if (!initialDate || !initialDate.startsWith(monthPrefix)) {
-            if (todayIso && todayIso.startsWith(monthPrefix)) {
-                initialDate = todayIso;
-            } else if (calendarData.size > 0) {
-                initialDate = calendarData.keys().next().value;
-            } else {
-                initialDate = buildDateKey(currentYear, currentMonth, 1);
-            }
-        }
+        const canKeepSelection = (
+            selectedDate &&
+            selectedDate.startsWith(monthPrefix) &&
+            dayButtons.has(selectedDate)
+        );
 
-        selectDate(initialDate);
+        if (canKeepSelection) {
+            selectDate(selectedDate, false);
+        } else {
+            clearSelection();
+        }
     };
 
     const fetchMonth = async (year, month) => {

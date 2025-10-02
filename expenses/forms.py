@@ -1,4 +1,4 @@
-"""Form definitions for creating and editing Ledgerly transactions."""
+"""I keep my Ledgerly forms for creating and editing transactions here."""
 
 from decimal import Decimal
 from typing import cast
@@ -16,7 +16,7 @@ from .models import Category, Transaction, UserSettings
 
 
 class TransactionForm(forms.ModelForm):
-    """Allow users to edit their existing transactions."""
+    """I let users edit their existing transactions."""
 
     currency_code: str
 
@@ -91,7 +91,7 @@ class TransactionForm(forms.ModelForm):
 
 
 class CurrencySettingsForm(forms.ModelForm):
-    """Allow users to pick their preferred currency."""
+    """I let users pick their preferred currency."""
 
     class Meta:
         model = UserSettings

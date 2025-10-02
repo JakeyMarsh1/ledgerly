@@ -1,4 +1,4 @@
-{# Confirmation screen for deleting an account. Matches the site's visual style. #}
+{# I styled this delete confirmation screen to match the rest of my site. #}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{% static 'expenses/metallic-bg.css' %}">
 </head>
 <body>
-    <!-- Navigation mirrors dashboard styling so the flow feels familiar. -->
+    <!-- I mirror the dashboard styling so the flow feels familiar. -->
     <nav class="navbar navbar-light bg-light">
         <div class="container d-flex justify-content-between align-items-center">
             {% if user.is_authenticated %}
@@ -22,18 +22,12 @@
             {% if user.is_authenticated %}
                 <div class="d-flex align-items-center">
                     <span class="navbar-text me-3">Welcome, {{ user.username }}!</span>
-                    <!-- Account dropdown gives quick access to other management pages. -->
+                    <!-- I keep the account dropdown handy for other account pages. -->
                     <div class="dropdown">
                         <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
                             Account
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                            <li><a class="dropdown-item" href="{% url 'account_change_password' %}">Change Password</a></li>
-                            <li><a class="dropdown-item" href="{% url 'account_email' %}">Email Settings</a></li>
-                            <li><a class="dropdown-item text-danger" href="{% url 'account_delete' %}">Delete Account</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'account_logout' %}">Logout</a></li>
-                        </ul>
+                        {% include 'includes/account_dropdown.html' %}
                     </div>
                 </div>
             {% endif %}
@@ -43,13 +37,13 @@
         <h1 class="mb-4 text-center"><u>Ledgerly</u></h1>
         <div class="row justify-content-center align-items-center min-vh-50">
             <div class="col-md-6 col-lg-5">
-                <!-- Destructive action card emphasises the seriousness of deletion. -->
+                <!-- I style this card destructively to stress the deletion step. -->
                 <div class="card shadow border-danger">
                     <div class="card-body p-4">
                         <h2 class="card-title text-center mb-3 text-danger">Delete Account</h2>
                         <p class="text-center">This will permanently remove your Ledgerly account along with all transactions.</p>
                         <p class="text-center mb-4">If you're sure, confirm below. Otherwise, you can return to the dashboard.</p>
-                        <!-- Form posts straight to the delete endpoint to remove the user. -->
+                        <!-- I post straight to the delete endpoint to remove the user. -->
                         <form method="post" class="d-grid gap-3">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger btn-lg">Yes, delete my account</button>

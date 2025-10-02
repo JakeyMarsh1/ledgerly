@@ -1,4 +1,4 @@
-{# Post-deletion confirmation screen shown after removing an account. #}
+{# I show this confirmation page once an account has been removed. #}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{% static 'expenses/metallic-bg.css' %}">
 </head>
 <body>
-    <!-- Keep navigation consistent even after sign-out procedures. -->
+    <!-- I keep the navigation consistent even after sign-out. -->
     <nav class="navbar navbar-light bg-light">
         <div class="container d-flex justify-content-between align-items-center">
             {% if user.is_authenticated %}
@@ -22,18 +22,12 @@
             {% if user.is_authenticated %}
                 <div class="d-flex align-items-center">
                     <span class="navbar-text me-3">Welcome, {{ user.username }}!</span>
-                    <!-- Dropdown remains available for quick navigation if still logged in. -->
+                    <!-- I leave the dropdown up if the user stayed signed in. -->
                     <div class="dropdown">
                         <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
                             Account
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                            <li><a class="dropdown-item" href="{% url 'account_change_password' %}">Change Password</a></li>
-                            <li><a class="dropdown-item" href="{% url 'account_email' %}">Email Settings</a></li>
-                            <li><a class="dropdown-item text-danger" href="{% url 'account_delete' %}">Delete Account</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'account_logout' %}">Logout</a></li>
-                        </ul>
+                        {% include 'includes/account_dropdown.html' %}
                     </div>
                 </div>
             {% endif %}
@@ -43,7 +37,7 @@
         <h1 class="mb-4 text-center"><u>Ledgerly</u></h1>
         <div class="row justify-content-center align-items-center min-vh-50">
             <div class="col-md-6 col-lg-5">
-                <!-- Success card reassures the user the deletion completed. -->
+                <!-- I use this success card to reassure folks the deletion is done. -->
                 <div class="card shadow border-success">
                     <div class="card-body p-4 text-center">
                         <h2 class="card-title mb-3 text-success">Account Deleted</h2>
@@ -53,7 +47,7 @@
                             <p class="mb-3">Your account has been removed successfully.</p>
                         {% endif %}
                         <p class="mb-4">If you change your mind, you're welcome to create a new Ledgerly account anytime.</p>
-                        <!-- Offer clear next steps: sign up fresh or return to login. -->
+                        <!-- I offer clear next steps: sign up again or head to login. -->
                         <div class="d-grid gap-2">
                             <a href="{% url 'account_signup' %}" class="btn btn-primary">Create a new account</a>
                             <a href="{% url 'account_login' %}" class="btn btn-outline-secondary">Return to Login</a>
