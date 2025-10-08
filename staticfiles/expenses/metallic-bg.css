@@ -1,4 +1,4 @@
-/* Overlay metallic AI-inspired background across all pages. */
+/* I overlay a metallic, AI-inspired background across every page. */
 body {
     background: url('/static/metallic_ai1.png') no-repeat center center fixed;
     background-size: cover;

@@ -6,6 +6,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- I set the browser tab title here. -->
     <title>Expenses Dashboard</title>
     <!-- I pull in Bootstrap for the responsive layout and widgets. -->
@@ -14,15 +15,15 @@
     <link rel="stylesheet" href="{% static 'expenses/style.css' %}">
     <link rel="stylesheet" href="{% static 'expenses/metallic-bg.css' %}">
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 {% if user.is_authenticated %}
     <!-- I only render the main dashboard for authenticated users. -->
     <nav class="navbar navbar-light bg-light">
-        <div class="container d-flex align-items-center gap-4">
+        <div class="container-fluid px-4">
             <a class="navbar-brand mb-0 h1" href="{% url 'dashboard' %}">Ledgerly</a>
-            <div class="ms-auto d-flex align-items-center gap-3">
-                <span class="navbar-text mb-0 text-nowrap">Welcome, {{ user.username }}!</span>
-                <div class="dropdown">
+            <div class="ms-auto">
+                <span class="navbar-text mb-0 text-nowrap me-3">Welcome, {{ user.username }}!</span>
+                <div class="dropdown d-inline-block">
                     <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
                         Account
                     </button>
@@ -32,256 +33,267 @@
         </div>
     </nav>
 
-    <div class="container py-4">
-        {% if messages %}
-            <div class="mb-3">
-                {% for message in messages %}
-                    <div
-                        class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show mb-2 py-2 px-3 small shadow-sm"
-                        role="alert"
-                    >
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-        <div class="row g-4 align-items-stretch">
-            <div class="col-lg-6 d-flex">
-                <div class="card shadow-sm flex-fill d-flex flex-column">
-                    <div class="card-body d-flex flex-column flex-grow-1">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h2 class="h5 mb-0">Income vs Expenses</h2>
-                            <span class="badge bg-primary">Last 12 Months</span>
+    <main class="dashboard-main flex-fill" role="main">
+        <div class="container-fluid px-4 py-4">
+            {% if messages %}
+                <div class="mb-3">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show mb-2 py-2 px-3 small shadow-sm" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
-                        <div class="chart-wrapper rounded flex-grow-1 overflow-hidden d-flex flex-column">
-                            <div id="monthlyChartLegend" class="chart-legend d-flex justify-content-center align-items-center"></div>
-                            <div class="flex-grow-1 position-relative">
-                                <canvas
-                                    id="monthlyChart"
-                                    aria-label="Monthly income versus expenses"
-                                    role="img"
-                                    class="w-100 h-100"
-                                    data-currency-code="{{ currency_code }}"
-                                    data-currency-symbol="{{ currency_symbol }}"
-                                ></canvas>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <!-- Top Row: Chart, Spend History, Top Expenses, Search -->
+            <div class="row g-4 mb-4">
+                <div class="col-lg-4">
+                    <div class="card shadow-sm h-100" style="min-height: 400px;">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <h2 class="h5 mb-1 text-primary">Income vs Expenses</h2>
+                                <p class="small text-secondary mb-0">Past 12 cycles aligned with your configured cycle start.</p>
+                            </div>
+                            <div class="dashboard-chart-toggle btn-group btn-group-sm mb-3 w-100" role="group" aria-label="Toggle datasets">
+                                <button type="button" class="btn btn-outline-primary dashboard-chart-toggle__button dashboard-chart-toggle__button--income active" data-series="income" aria-pressed="true">Income</button>
+                                <button type="button" class="btn btn-outline-primary dashboard-chart-toggle__button dashboard-chart-toggle__button--expense active" data-series="expense" aria-pressed="true">Expenses</button>
+                            </div>
+                            <div class="dashboard-chart" data-currency-symbol="{{ currency_symbol }}" data-currency-code="{{ currency_code }}">
+                                <canvas id="dashboardChart" class="dashboard-chart__canvas" role="img" aria-label="Line chart showing income and expenses for the last twelve cycles"></canvas>
+                                <div class="dashboard-chart__empty small text-secondary text-center d-none">
+                                    Not enough data yet. Add income and expenses to see your trend.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 d-none d-lg-block">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <h2 class="h5 mb-0 text-primary">Spend History</h2>
+                            </div>
+                            <div class="dashboard-scroll-320">
+                                <ul class="list-group list-group-flush">
+                                    {% for t in transactions %}
+                                        <li class="list-group-item bg-transparent px-0 py-2">
+                                            <div class="text-center">
+                                                <h3 class="h6 mb-1 text-primary text-truncate">{{ t.name }}</h3>
+                                                <div class="fw-semibold mb-1 {% if t.type == 'OUTGO' %}text-danger{% else %}text-success{% endif %}">
+                                                    {% if t.type == 'OUTGO' %}-{% else %}+{% endif %}{{ t.amount_in_cents|cents_to_currency:currency_code }}
+                                                </div>
+                                                <div class="small text-primary">
+                                                    {{ t.occurred_on|date:'d M Y' }}<br>
+                                                    {{ t.category|default:'Uncategorized' }}
+                                                </div>
+                                            </div>
+                                        </li>
+                                    {% empty %}
+                                        <li class="list-group-item bg-transparent text-center text-primary py-4">
+                                            No transactions to display.
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 d-none d-lg-block">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <h2 class="h5 mb-3 text-primary">Top Expenses</h2>
+                            <div class="dashboard-scroll-320 mt-2">
+                                <ul class="list-group list-group-flush">
+                                    {% for expense in top_expenses %}
+                                        <li class="list-group-item bg-transparent px-0 py-2">
+                                            <div class="text-center">
+                                                <h3 class="h6 mb-1 text-primary text-truncate">{{ expense.name }}</h3>
+                                                <div class="fw-semibold text-danger mb-1">
+                                                    -{{ expense.amount_in_cents|cents_to_currency:currency_code }}
+                                                </div>
+                                                <div class="small text-primary">
+                                                    {{ expense.occurred_on|date:'d M Y' }}<br>
+                                                    {{ expense.category|default:'Uncategorized' }}
+                                                    {% if expense.note %}<br><em>{{ expense.note|truncatechars:20 }}</em>{% endif %}
+                                                </div>
+                                            </div>
+                                        </li>
+                                    {% empty %}
+                                        <li class="list-group-item bg-transparent text-center text-primary py-4">
+                                            No expense data yet.
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-2">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <h2 class="h5 mb-0 text-primary">Search</h2>
+                                    </div>
+                                    <div class="col-auto">
+                                        <button type="button" class="btn btn-outline-primary btn-sm d-lg-none" data-bs-toggle="modal" data-bs-target="#transactionCalendarModal" aria-label="Open transaction calendar">
+                                            <svg class="calendar-button-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                <rect x="3" y="4" width="18" height="17" rx="3" ry="3" stroke="currentColor" stroke-width="1.5" />
+                                                <path d="M3 10H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                                <path d="M8 3V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                                <path d="M16 3V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                            </svg>
+                                            <span class="fw-semibold">Calendar</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <form method="get" action="{% url 'dashboard' %}" data-search-url="{% url 'transaction_search_results' %}" data-results-target="#search-results">
+                                <div class="mb-3">
+                                    <input type="search" name="q" class="form-control" placeholder="Search transactions..." value="{{ search_query }}" autocomplete="off">
+                                </div>
+                            </form>
+                            <div id="search-results" class="dashboard-scroll-260 mt-2 {% if not search_query %}d-none{% endif %}">
+                                {% if search_query %}
+                                    {% include 'expenses/search_results_list.html' with search_results=search_results currency_code=currency_code %}
+                                {% endif %}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6 d-flex flex-column">
-                <div class="row g-4 flex-grow-1">
-                    <div class="col-12 col-lg-4 d-flex">
-                        <div class="card shadow-sm h-100 flex-fill">
-                            <div class="card-body d-flex flex-column">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h2 class="h5 mb-0 text-primary">Spend History</h2>
+
+            <!-- Bottom Row: Monthly Budget and Quick Actions -->
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <!-- Top Row: Monthly Budget and Amount -->
+                            <div class="row mb-4 text-primary">
+                                <div class="col-6">
+                                    <span class="text-uppercase small fw-semibold">Monthly Budget</span>
                                 </div>
-                                <p class="text-primary small mb-3">Latest 15 transactions</p>
-                                <div class="flex-grow-1 dashboard-scroll-320">
-                                    <ul class="list-group list-group-flush">
-                                        {% for t in transactions %}
-                                            <li class="list-group-item bg-transparent px-0 py-2">
-                                                <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
-                                                    <div class="flex-grow-1 min-w-0">
-                                                        <h3 class="h6 mb-1 text-primary text-truncate">{{ t.name }}</h3>
-                                                        <div class="small text-primary text-break">
-                                                            {{ t.occurred_on|date:'d M Y' }} · {{ t.category|default:'Uncategorized' }}
-                                                            {% if t.note %}<span></span>{% endif %}
-                                                        </div>
-                                                    </div>
-                                                    <div class="text-end">
-                                                        <span class="fw-semibold {% if t.type == 'OUTGO' %}text-danger{% else %}text-success{% endif %}">
-                                                            {% if t.type == 'OUTGO' %}-{% else %}+{% endif %}{{ t.amount_in_cents|cents_to_currency:currency_code }}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        {% empty %}
-                                            <li class="list-group-item bg-transparent text-center text-primary py-4">
-                                                No transactions to display.
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-lg-4 d-flex">
-                        <div class="card shadow-sm h-100 flex-fill">
-                            <div class="card-body d-flex flex-column">
-                                <h2 class="h5 mb-3 text-primary">Top Expenses</h2>
-                                <div class="flex-grow-1 dashboard-scroll-320 mt-2">
-                                    <ul class="list-group list-group-flush">
-                                        {% for expense in top_expenses %}
-                                            <li class="list-group-item bg-transparent px-0 py-2">
-                                                <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
-                                                    <div class="flex-grow-1 min-w-0">
-                                                        <h3 class="h6 mb-1 text-primary text-truncate">{{ expense.name }}</h3>
-                                                        <div class="small text-primary text-break">
-                                                            {{ expense.occurred_on|date:'d M Y' }} · {{ expense.category|default:'Uncategorized' }}
-                                                            {% if expense.note %}<span>— {{ expense.note }}</span>{% endif %}
-                                                        </div>
-                                                    </div>
-                                                    <div class="text-end">
-                                                        <span class="fw-semibold text-danger">-{{ expense.amount_in_cents|cents_to_currency:currency_code }}</span>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        {% empty %}
-                                            <li class="list-group-item bg-transparent text-center text-primary py-4">
-                                                No expense data yet.
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-lg-4 d-flex">
-                        <div class="card shadow-sm h-100 flex-fill">
-                            <div class="card-body d-flex flex-column align-items-stretch">
-                                <h2 class="h5 mb-3 text-primary">Search</h2>
-                                <form
-                                    class="d-flex flex-column gap-3"
-                                    method="get"
-                                    action="{% url 'dashboard' %}"
-                                    data-search-url="{% url 'transaction_search_results' %}"
-                                    data-results-target="#search-results"
-                                >
-                                    <div>
-                                        <label class="form-label small text-uppercase text-primary">Keyword</label>
-                                        <input
-                                            type="search"
-                                            name="q"
-                                            class="form-control"
-                                            placeholder="Search transactions..."
-                                            value="{{ search_query }}"
-                                            autocomplete="off"
-                                        >
-                                    </div>
-                                    <button class="btn btn-outline-primary w-100" type="submit">Search</button>
-                                </form>
-                                <div
-                                    id="search-results"
-                                    class="flex-grow-1 w-100 dashboard-scroll-260 mt-2"
-                                >
-                                    {% if search_query %}
-                                        {% include 'expenses/search_results_list.html' with search_results=search_results currency_code=currency_code %}
+                                <div class="col-6 text-end">
+                                    {% if balance >= 0 %}
+                                        <span class="fs-4 fw-semibold text-success mb-0">
+                                            {{ balance|cents_to_currency:currency_code }}
+                                        </span>
+                                    {% else %}
+                                        <span class="fs-4 fw-semibold text-danger mb-0">
+                                            {{ balance|cents_to_currency:currency_code }}
+                                        </span>
                                     {% endif %}
                                 </div>
                             </div>
+                            
+                            <!-- Middle: Progress Bar -->
+                            <div class="tug-bar-wrapper mb-4">
+                                <div class="tug-bar position-relative" aria-hidden="true">
+                                    <div class="tug-bar__income" style="--percent: {{ income_percent }};"></div>
+                                    <div class="tug-bar__expense" style="--percent: {{ expense_percent }};"></div>
+                                    {% if income_percent == 0 and expense_percent == 0 %}
+                                        <div class="tug-bar__empty text-primary small text-center px-3">
+                                            Add income and expenses to see cycle progress.
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Bottom Row: Current Cycle and Date -->
+                            <div class="row text-primary">
+                                <div class="col-6">
+                                    <span class="text-uppercase small fw-semibold">Current Cycle</span>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <span class="fs-6">{{ cycle_display_start|date:'d/m/y' }} – {{ cycle_display_end|date:'d/m/y' }}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="row g-4 mt-1">
-            <div class="col-lg-6">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body d-flex flex-column">
-                        <div class="d-flex flex-wrap justify-content-between align-items-center text-primary mb-4 gap-3">
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="text-uppercase small fw-semibold">Current Cycle</span>
-                                <span class="fs-6">
-                                    {{ cycle_display_start|date:'d/m/y' }} – {{ cycle_display_end|date:'d/m/y' }}
-                                </span>
-                            </div>
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="text-uppercase small fw-semibold">Monthly Budget</span>
-                                {% if balance >= 0 %}
-                                    <span class="fs-4 fw-semibold text-success mb-0">
-                                        {{ balance|cents_to_currency:currency_code }}
-                                    </span>
-                                {% else %}
-                                    <span class="fs-4 fw-semibold text-danger mb-0">
-                                        {{ balance|cents_to_currency:currency_code }}
-                                    </span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="tug-bar-wrapper flex-grow-1 d-flex flex-column justify-content-center gap-3">
-                            <div class="tug-bar position-relative" aria-hidden="true">
-                                <div
-                                    class="tug-bar__income"
-                                    style="--percent: {{ income_percent }};"
-                                ></div>
-                                <div
-                                    class="tug-bar__expense"
-                                    style="--percent: {{ expense_percent }};"
-                                ></div>
-                                {% if income_percent == 0 and expense_percent == 0 %}
-                                    <div class="tug-bar__empty text-primary small text-center px-3">
-                                        Add income and expenses to see cycle progress.
+                
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <h2 class="h5 mb-0 text-primary">Quick Actions</h2>
                                     </div>
-                                {% endif %}
+                                    <div class="col-auto">
+                                        <button type="button" class="btn btn-outline-primary btn-sm d-none d-lg-block" data-bs-toggle="modal" data-bs-target="#transactionCalendarModal" aria-label="Open transaction calendar">
+                                            <svg class="calendar-button-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                <rect x="3" y="4" width="18" height="17" rx="3" ry="3" stroke="currentColor" stroke-width="1.5" />
+                                                <path d="M3 10H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                                <path d="M8 3V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                                <path d="M16 3V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                            </svg>
+                                            <span class="fw-semibold">Calendar</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#addIncomeModal">
+                                        Income
+                                    </button>
+                                </div>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
+                                        Expense
+                                    </button>
+                                </div>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-secondary w-100" data-bs-toggle="modal" data-bs-target="#cycleStartModal">
+                                        Cycle Start
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body d-flex flex-column gap-3">
-                        <div class="d-flex justify-content-between align-items-center gap-2">
-                            <h2 class="h5 mb-0 text-primary">Quick Actions</h2>
-                            <button
-                                type="button"
-                                class="btn btn-outline-primary btn-sm d-flex align-items-center gap-2 ms-auto"
-                                data-bs-toggle="modal"
-                                data-bs-target="#transactionCalendarModal"
-                                aria-label="Open transaction calendar"
-                            >
-                                <svg
-                                    class="calendar-button-icon"
-                                    width="18"
-                                    height="18"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    aria-hidden="true"
-                                >
-                                    <rect x="3" y="4" width="18" height="17" rx="3" ry="3" stroke="currentColor" stroke-width="1.5" />
-                                    <path d="M3 10H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                                    <path d="M8 3V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                                    <path d="M16 3V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                                </svg>
-                                <span class="fw-semibold d-none d-sm-inline">Calendar</span>
-                            </button>
-                        </div>
-                        <div class="d-flex flex-wrap gap-3 mt-auto">
-                            <button
-                                type="button"
-                                class="btn btn-primary flex-fill"
-                                data-bs-toggle="modal"
-                                data-bs-target="#addIncomeModal"
-                            >
-                                Add Income
-                            </button>
-                            <button
-                                type="button"
-                                class="btn btn-outline-primary flex-fill"
-                                data-bs-toggle="modal"
-                                data-bs-target="#addExpenseModal"
-                            >
-                                Add Expense
-                            </button>
-                            <button
-                                type="button"
-                                class="btn btn-outline-secondary flex-fill"
-                                data-bs-toggle="modal"
-                                data-bs-target="#cycleStartModal"
-                            >
-                                Change Cycle Start
-                            </button>
-                        </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container-fluid px-4">
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <span class="site-footer__brand">Ledgerly</span>
+                </div>
+                <div class="col-md-4 text-center">
+                    <nav aria-label="Social links">
+                        <ul class="site-footer__social list-unstyled mb-0">
+                            <li class="d-inline-block me-3">
+                                <a href="https://linkedin.com/company/ledgerly" target="_blank" rel="noopener noreferrer" class="site-footer__link">
+                                    <span aria-hidden="true">in</span>
+                                    <span class="visually-hidden">Ledgerly on LinkedIn</span>
+                                </a>
+                            </li>
+                            <li class="d-inline-block">
+                                <a href="https://github.com/ledgerly" target="_blank" rel="noopener noreferrer" class="site-footer__link">
+                                    <span aria-hidden="true">GH</span>
+                                    <span class="visually-hidden">Ledgerly on GitHub</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="small text-secondary">
+                        © {% now 'Y' %} Ledgerly. All rights reserved.
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </footer>
 
     <!-- Quick action modals I reuse throughout the dashboard. -->
     <div class="modal fade" id="addIncomeModal" tabindex="-1" aria-labelledby="addIncomeModalLabel" aria-hidden="true">
@@ -302,16 +314,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Amount ({{ currency_symbol }})</label>
-                            <input
-                                type="number"
-                                name="amount_in_cents"
-                                class="form-control"
-                                min="0"
-                                step="0.01"
-                                max="{{ max_transaction_amount }}"
-                                placeholder="e.g. 125.50"
-                                required
-                            >
+                            <input type="number" name="amount_in_cents" class="form-control" min="0" step="0.01" max="{{ max_transaction_amount }}" placeholder="e.g. 125.50" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Date</label>
@@ -349,16 +352,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Amount ({{ currency_symbol }})</label>
-                            <input
-                                type="number"
-                                name="amount_in_cents"
-                                class="form-control"
-                                min="0"
-                                step="0.01"
-                                max="{{ max_transaction_amount }}"
-                                placeholder="e.g. 42.00"
-                                required
-                            >
+                            <input type="number" name="amount_in_cents" class="form-control" min="0" step="0.01" max="{{ max_transaction_amount }}" placeholder="e.g. 42.00" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Category</label>
@@ -400,13 +394,7 @@
                         <input type="hidden" name="action" value="update_cycle_start">
                         <div class="mb-3">
                             <label class="form-label">Cycle Start Date</label>
-                            <input
-                                type="date"
-                                name="cycle_start_date"
-                                class="form-control"
-                                value="{{ cycle_setting_start|date:'Y-m-d' }}"
-                                required
-                            >
+                            <input type="date" name="cycle_start_date" class="form-control" value="{{ cycle_setting_start|date:'Y-m-d' }}" required>
                         </div>
                         <p class="text-primary small mb-0">
                             This date is used to calculate monthly insights and resets.
@@ -421,17 +409,10 @@
         </div>
     </div>
 
-    <div
-        class="modal fade"
-        id="transactionCalendarModal"
-        tabindex="-1"
-        aria-hidden="true"
-        aria-labelledby="transactionCalendarLabel"
-        data-calendar-url="{% url 'transaction_calendar_data' %}"
-    >
+    <div class="modal fade" id="transactionCalendarModal" tabindex="-1" aria-hidden="true" aria-labelledby="transactionCalendarLabel" data-calendar-url="{% url 'transaction_calendar_data' %}">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content calendar-modal">
-                <div class="modal-header border-0 align-items-center pb-0">
+                <div class="modal-header border-0 pb-0">
                     <h1 class="h5 mb-0 text-primary" id="transactionCalendarLabel">Transaction Calendar</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -442,19 +423,25 @@
                     </div>
                     <div class="alert alert-danger d-none js-calendar-error mb-0" role="alert"></div>
                     <div class="js-calendar-content d-none calendar-modal__content mt-1">
-                        <div class="calendar-nav d-flex align-items-center justify-content-between gap-2 mb-3">
-                            <button type="button" class="btn btn-outline-secondary btn-sm js-calendar-nav-prev">
-                                <span aria-hidden="true">&lsaquo;</span>
-                                <span class="visually-hidden">Previous month</span>
-                            </button>
-                            <div class="flex-grow-1 text-center px-2">
-                                <p class="h5 mb-0 text-primary js-calendar-month-label">Month</p>
-                                <p class="small text-secondary mb-0">Select a date to review or capture activity.</p>
+                        <div class="calendar-nav mb-3">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm js-calendar-nav-prev">
+                                        <span aria-hidden="true">&lsaquo;</span>
+                                        <span class="visually-hidden">Previous month</span>
+                                    </button>
+                                </div>
+                                <div class="col text-center">
+                                    <p class="h5 mb-0 text-primary js-calendar-month-label">Month</p>
+                                    <p class="small text-secondary mb-0">Select a date to review or capture activity.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm js-calendar-nav-next">
+                                        <span class="visually-hidden">Next month</span>
+                                        <span aria-hidden="true">&rsaquo;</span>
+                                    </button>
+                                </div>
                             </div>
-                            <button type="button" class="btn btn-outline-secondary btn-sm js-calendar-nav-next">
-                                <span class="visually-hidden">Next month</span>
-                                <span aria-hidden="true">&rsaquo;</span>
-                            </button>
                         </div>
                         <div class="calendar-weekdays mb-2">
                             <span class="calendar-weekday">Sun</span>
@@ -467,24 +454,22 @@
                         </div>
                         <div class="calendar-grid js-calendar-grid" role="grid" aria-live="polite"></div>
                         <div class="calendar-transactions mt-4">
-                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
-                                <div>
+                            <div class="row align-items-center mb-3">
+                                <div class="col">
                                     <h2 class="h6 mb-1 text-primary">
                                         Transactions on <span class="js-calendar-selected-date">—</span>
                                     </h2>
                                     <p class="small text-secondary mb-0">Jump straight into editing, deleting, or creating entries.</p>
                                 </div>
-                                <div class="btn-group" role="group" aria-label="Add transaction">
-                                    <button type="button" class="btn btn-outline-success btn-sm js-calendar-add-income">+ Income</button>
-                                    <button type="button" class="btn btn-outline-danger btn-sm js-calendar-add-expense">+ Expense</button>
+                                <div class="col-auto">
+                                    <div class="btn-group" role="group" aria-label="Add transaction">
+                                        <button type="button" class="btn btn-outline-success btn-sm js-calendar-add-income">+ Income</button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm js-calendar-add-expense">+ Expense</button>
+                                    </div>
                                 </div>
                             </div>
                             <div class="calendar-transactions__list position-relative">
-                                <div
-                                    class="js-calendar-empty text-secondary text-center py-4"
-                                    data-default-message="No transactions for this date yet."
-                                    data-prompt-message="Select a date to review transactions."
-                                >
+                                <div class="js-calendar-empty text-secondary text-center py-4" data-default-message="No transactions for this date yet." data-prompt-message="Select a date to review transactions.">
                                     Select a date to review transactions.
                                 </div>
                                 <ul class="list-group list-group-flush js-calendar-transaction-list small d-none"></ul>
@@ -496,21 +481,12 @@
         </div>
     </div>
 
-    {% if months and income_data and expense_data %}
-        {{ months|json_script:"chart-months" }}
-        {{ income_data|json_script:"chart-income" }}
-        {{ expense_data|json_script:"chart-expense" }}
-    {% endif %}
+    {{ months|json_script:"dashboard-chart-months" }}
+    {{ income_data|json_script:"dashboard-chart-income" }}
+    {{ expense_data|json_script:"dashboard-chart-expense" }}
     <!-- I rely on the Bootstrap bundle for dropdowns and other interactions. -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" integrity="sha384-NrKB+u6Ts6AtkIhwPixiKTzgSKNblyhlk0Sohlgar9UHUBzai/sgnNNWWd291xqt" crossorigin="anonymous"></script>
-    <div
-        class="modal fade"
-        id="transactionModal"
-        tabindex="-1"
-        aria-hidden="true"
-        aria-labelledby="transactionModalLabel"
-    >
+    <div class="modal fade" id="transactionModal" tabindex="-1" aria-hidden="true" aria-labelledby="transactionModalLabel">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body text-center py-5">
@@ -520,16 +496,14 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="{% static 'expenses/dashboard-chart.js' %}"></script>
     <script src="{% static 'expenses/dashboard-modal.js' %}"></script>
     <script src="{% static 'expenses/dashboard-search.js' %}"></script>
     <script src="{% static 'expenses/dashboard-calendar.js' %}"></script>
-    <script src="{% static 'expenses/dashboard-chart.js' %}"></script>
 {% else %}
     <!-- If a visitor isn't authenticated, I send them to the login screen. -->
-    <script
-        src="{% static 'expenses/dashboard-login-redirect.js' %}"
-        data-login-url="{% url 'account_login' %}"
-    ></script>
+    <script src="{% static 'expenses/dashboard-login-redirect.js' %}" data-login-url="{% url 'account_login' %}"></script>
 {% endif %}
 </body>
 </html>

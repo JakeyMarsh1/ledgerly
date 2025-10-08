@@ -1,13 +1,34 @@
 /* My Ledgerly dark theme: space gray with blue accents. */
+html, body {
+    height: 100%;
+}
+
 body {
     background-color: #181A1B;
     color: #3B82F6;
+    min-height: 100vh;
+}
+
+.dashboard-main {
+    width: 100%;
+    padding-bottom: 1.5rem;
+}
+
+@media (min-width: 992px) and (max-width: 1399.98px) {
+    .dashboard-main {
+        padding-bottom: 0.5rem;
+    }
 }
 
 .navbar, .card, .dropdown-menu, .modal-content {
     background-color: #23272A !important;
     color: #3B82F6 !important;
     border-color: rgba(59, 130, 246, 0.35) !important;
+}
+
+/* Ensure dropdown appears above modals */
+.dropdown-menu {
+    z-index: 1060 !important;
 }
 
 .card {
@@ -82,91 +103,17 @@ a, .text-decoration-none {
 }
 
 .alert.alert-dismissible {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 0.75rem;
+    position: relative;
 }
 
 .alert.alert-dismissible .btn-close {
-    position: static;
-    margin: 0;
-    padding: 0.5rem;
-    align-self: center;
-    margin-left: auto;
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 
-.chart-wrapper {
-    background: rgba(35, 39, 42, 0.6);
-    min-height: 320px;
-    padding: 1.25rem 1.25rem 0.9rem;
-    border-radius: 1.25rem;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-}
-
-@media (max-width: 991.98px) {
-    .chart-wrapper {
-        min-height: 260px;
-    }
-}
-
-.chart-wrapper canvas {
-    width: 100% !important;
-    height: 100% !important;
-    display: block;
-}
-
-.chart-legend {
-    width: 100%;
-    color: #E2E8F0;
-    font-size: 0.875rem;
-    gap: 1.25rem;
-    padding: 0.85rem 1.25rem 0.5rem;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-}
-
-.chart-legend__item {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    letter-spacing: 0.02em;
-    background: transparent;
-    border: 0;
-    padding: 0;
-    text-align: left;
-    cursor: pointer;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.chart-legend__item:last-child {
-    margin-bottom: 0;
-}
-
-.chart-legend__item:hover {
-    transform: translateX(2px);
-}
-
-.chart-legend__item--muted {
-    opacity: 0.4;
-}
-
-.chart-legend__orb {
-    width: 14px;
-    height: 14px;
-    border-radius: 9999px;
-    background: currentColor;
-    box-shadow: 0 0 6px currentColor, 0 0 12px currentColor;
-}
-
-.chart-legend__label {
-    color: inherit;
-    white-space: nowrap;
-}
 
 .dashboard-scroll-320 {
     max-height: 320px;
@@ -174,8 +121,268 @@ a, .text-decoration-none {
 }
 
 .dashboard-scroll-260 {
+    height: 260px;
+    overflow-y: auto;
+}
+
+.dashboard-top-grid {
+    display: grid;
+    gap: 1.25rem;
+    grid-auto-rows: minmax(0, 1fr);
+    width: 100%;
+}
+
+.dashboard-top-grid__item {
+    min-width: 0;
+    width: 100%;
+}
+
+.dashboard-top-grid__chart {
+    order: -1;
+}
+
+.dashboard-chart {
+    position: relative;
+    width: 100%;
+    min-height: 240px;
+    height: 240px;
+}
+
+.dashboard-chart__canvas {
+    width: 100%;
+    height: 240px !important;
+    min-height: 240px;
+}
+
+.dashboard-chart__empty {
+    position: absolute;
+    inset: 0;
+    padding: 1.75rem;
+    text-align: center;
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px dashed rgba(59, 130, 246, 0.22);
+    border-radius: 1rem;
+    backdrop-filter: blur(4px);
+}
+
+.dashboard-chart--empty .dashboard-chart__canvas {
+    display: none;
+}
+
+.dashboard-chart-toggle {
+    width: 100%;
+}
+
+.dashboard-chart-toggle .btn {
+    white-space: nowrap;
+    width: 50%;
+}
+
+/* Mobile separator between Spend History and Top Expenses */
+.dashboard-mobile-separator {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(59, 130, 246, 0.35) 50%, transparent 100%);
+    border: none;
+    margin: 1.5rem 0;
+}
+
+
+
+@media (max-width: 420px) {
+    .dashboard-mobile-separator {
+        margin: 2rem 0;
+        background: linear-gradient(90deg, transparent 10%, rgba(59, 130, 246, 0.5) 50%, transparent 90%);
+    }
+}
+
+/* Make quick action buttons tall enough for two lines of text at all screen sizes */
+.btn[data-bs-target="#addIncomeModal"],
+.btn[data-bs-target="#addExpenseModal"],
+.btn[data-bs-target="#cycleStartModal"] {
+    padding: 1rem 1rem;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* Rotate chart x-axis labels for better spacing */
+.dashboard-chart__canvas {
+    font-size: 12px;
+}
+
+/* Chart.js x-axis label rotation - this will be handled in JavaScript */
+
+/* Hide mobile digest sections at 991px and below */
+@media (max-width: 991px) {
+    .dashboard-mobile-digest.d-lg-none {
+        display: none !important;
+    }
+}
+
+
+.dashboard-chart-toggle__button {
+    background-color: rgba(15, 23, 42, 0.45) !important;
+    color: #E2E8F0 !important;
+    border-width: 1px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.dashboard-chart-toggle__button--income {
+    border-color: rgba(59, 130, 246, 0.55) !important;
+    background-color: rgba(59, 130, 246, 0.18) !important;
+    color: rgba(219, 234, 254, 0.9) !important;
+    box-shadow: inset 0 0 12px rgba(59, 130, 246, 0.18);
+}
+
+.dashboard-chart-toggle__button--expense {
+    border-color: rgba(239, 68, 68, 0.65) !important;
+    background-color: rgba(239, 68, 68, 0.2) !important;
+    color: rgba(254, 226, 226, 0.92) !important;
+    box-shadow: inset 0 0 12px rgba(239, 68, 68, 0.18);
+}
+
+.dashboard-chart-toggle__button--income.active {
+    background-color: #3B82F6 !important;
+    color: #0f172a !important;
+    box-shadow:
+        0 12px 24px rgba(59, 130, 246, 0.28),
+        inset 0 0 0 1px rgba(15, 23, 42, 0.25);
+    transform: translateY(-1px);
+}
+
+.dashboard-chart-toggle__button--expense.active {
+    background-color: #EF4444 !important;
+    color: #fff !important;
+    box-shadow:
+        0 12px 24px rgba(239, 68, 68, 0.28),
+        inset 0 0 0 1px rgba(15, 23, 42, 0.25);
+    transform: translateY(-1px);
+}
+
+.dashboard-chart-toggle__button:not(.active):hover,
+.dashboard-chart-toggle__button:not(.active):focus-visible {
+    transform: translateY(-1px);
+}
+
+.dashboard-chart-toggle__button--income:not(.active):hover,
+.dashboard-chart-toggle__button--income:not(.active):focus-visible {
+    background-color: rgba(59, 130, 246, 0.22) !important;
+}
+
+.dashboard-chart-toggle__button--expense:not(.active):hover,
+.dashboard-chart-toggle__button--expense:not(.active):focus-visible {
+    background-color: rgba(239, 68, 68, 0.24) !important;
+}
+
+.dashboard-chart-toggle.is-disabled {
+    opacity: 0.65;
+    pointer-events: none;
+}
+
+.dashboard-mobile-digest {
+    margin-top: 0;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(148, 163, 184, 0.25);
+    height: 100%;
+}
+
+.dashboard-mobile-digest__columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+    position: relative;
+}
+
+.dashboard-mobile-digest__columns::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    background: linear-gradient(
+        180deg,
+        rgba(148, 163, 184, 0.45) 0%,
+        rgba(148, 163, 184, 0.05) 100%
+    );
+}
+
+.dashboard-mobile-digest__section {
+    gap: 0.75rem;
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+}
+
+.dashboard-mobile-digest__list {
     max-height: 260px;
     overflow-y: auto;
+    padding-right: 0.25rem;
+}
+
+@media (max-width: 767.98px) {
+    .dashboard-chart,
+    .dashboard-chart__canvas {
+        min-height: 180px;
+    }
+
+    .dashboard-chart-toggle {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .dashboard-chart-toggle__button {
+        width: 50%;
+        display: inline-block;
+    }
+}
+
+@media (max-width: 420px) {
+    .dashboard-mobile-digest__columns {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-mobile-digest__columns::before {
+        display: none;
+    }
+
+    .dashboard-mobile-digest__section {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+.dashboard-top-grid:last-of-type {
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+    .dashboard-bottom-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023.98px) {
+    .dashboard-top-grid:first-of-type {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .dashboard-top-grid:first-of-type .dashboard-top-grid__chart {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (min-width: 1024px) {
+    .dashboard-top-grid:first-of-type {
+        grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr));
+    }
+
+    .dashboard-top-grid:first-of-type .dashboard-top-grid__chart {
+        grid-column: 1;
+    }
 }
 
 .min-w-0 {
@@ -227,25 +434,11 @@ a, .text-decoration-none {
 .tug-bar__empty {
     position: absolute;
     inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     text-align: center;
     background: rgba(24, 26, 27, 0.65);
     backdrop-filter: blur(2px);
     border-radius: inherit;
-}
-
-@media (max-width: 768px) {
-    .chart-legend {
-        justify-content: center;
-        padding: 0.75rem 0.5rem 0;
-        gap: 1rem;
-    }
-
-    .chart-legend__item {
-        margin-bottom: 0;
-    }
+    padding-top: 4px;
 }
 
 .calendar-button-icon {
@@ -320,10 +513,6 @@ a, .text-decoration-none {
     position: relative;
     min-height: 4.25rem;
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
     border-radius: 1rem;
     background: linear-gradient(160deg, rgba(30, 41, 59, 0.78) 0%, rgba(15, 23, 42, 0.6) 100%);
     border: 1px solid rgba(148, 163, 184, 0.22);
@@ -411,4 +600,46 @@ a, .text-decoration-none {
 
 .calendar-transactions__list .list-group-item:last-child {
     border-bottom: none;
+}
+
+.site-footer {
+    background: rgba(17, 20, 24, 0.9);
+    border-top: 1px solid rgba(59, 130, 246, 0.35);
+    color: #94A3B8;
+    padding: 1.5rem 0;
+    margin-top: auto;
+}
+
+.site-footer__brand {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #3B82F6;
+}
+
+.site-footer__social {
+    padding: 0;
+}
+
+.site-footer__link {
+    color: #E2E8F0 !important;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    transition: color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+    display: inline-block;
+}
+
+.site-footer__link:hover,
+.site-footer__link:focus-visible {
+    color: #3B82F6 !important;
+    transform: translateY(-1px);
+    opacity: 0.9;
+}
+
+.site-footer__link span[aria-hidden="true"] {
+    font-weight: 600;
+    font-size: 0.85rem;
 }
