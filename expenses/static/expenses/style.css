@@ -76,6 +76,26 @@ body {
     color: #3B82F6 !important;
 }
 
+/* Enhanced button focus and hover states for accessibility */
+.btn:focus,
+.btn:focus-visible {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.6) !important;
+    outline: none !important;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus {
+    background-color: #3B82F6 !important;
+    border-color: #3B82F6 !important;
+    color: #ffffff !important;
+}
+
+.btn-outline-secondary:active {
+    background-color: #2563EB !important;
+    border-color: #2563EB !important;
+    color: #ffffff !important;
+}
+
 .list-group-item {
     background-color: #23272A !important;
     color: #E2E8F0 !important; /* High contrast light gray */
@@ -86,6 +106,16 @@ input, select, textarea {
     background-color: #23272A !important;
     color: #E2E8F0 !important; /* High contrast light gray */
     border-color: #3B82F6 !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+/* Enhanced form control focus states */
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #60A5FA !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25) !important;
+    outline: none !important;
 }
 
 hr, .dropdown-divider {
@@ -94,6 +124,22 @@ hr, .dropdown-divider {
 
 a, .text-decoration-none {
     color: #3B82F6 !important;
+    transition: color 0.2s ease !important;
+}
+
+/* Enhanced link focus and hover states */
+a:hover,
+a:focus,
+.text-decoration-none:hover,
+.text-decoration-none:focus {
+    color: #60A5FA !important; /* Lighter blue on hover */
+    text-decoration: underline !important;
+}
+
+a:focus,
+.text-decoration-none:focus {
+    outline: 2px solid rgba(59, 130, 246, 0.6) !important;
+    outline-offset: 2px !important;
 }
 
 ::-webkit-input-placeholder { color: #CBD5E1; } /* Lighter gray for placeholders */
@@ -118,6 +164,27 @@ a, .text-decoration-none {
 /* Override Bootstrap text utilities for better contrast */
 .text-dark {
     color: #E2E8F0 !important;
+}
+
+/* WCAG compliant close button styling */
+.btn-close {
+    filter: invert(1) !important; /* Make close button white */
+    opacity: 0.8 !important;
+    background-size: 1.2em !important; /* Larger close icon */
+    width: 1.5em !important;
+    height: 1.5em !important;
+    transition: opacity 0.2s ease, transform 0.2s ease !important;
+}
+
+.btn-close:hover,
+.btn-close:focus {
+    opacity: 1 !important;
+    transform: scale(1.1) !important; /* Slightly larger on hover */
+    filter: invert(1) brightness(1.2) !important; /* Brighter on hover */
+}
+
+.btn-close:focus {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5) !important; /* Blue focus ring */
 }
 
 /* I tweak the scrollbars so they match the theme. */
@@ -308,6 +375,13 @@ a, .text-decoration-none {
 .dashboard-chart-toggle__button:not(.active):hover,
 .dashboard-chart-toggle__button:not(.active):focus-visible {
     transform: translateY(-1px);
+}
+
+/* Enhanced focus rings for chart toggle buttons */
+.dashboard-chart-toggle__button:focus,
+.dashboard-chart-toggle__button:focus-visible {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.6) !important;
+    outline: none !important;
 }
 
 .dashboard-chart-toggle__button--income:not(.active):hover,

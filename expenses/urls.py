@@ -25,4 +25,16 @@ urlpatterns = [
         views.transaction_delete,
         name='transaction_delete',
     ),
+    # I route the calendar data endpoint for the transaction calendar modal.
+    path(
+        'transactions/calendar-data/',
+        views.transaction_calendar_data,
+        name='transaction_calendar_data',
+    ),
+    # I route the search results endpoint for AJAX transaction searches.
+    path(
+        'search/',
+        views.transaction_search_results,
+        name='transaction_search_results',
+    ),
 ]
