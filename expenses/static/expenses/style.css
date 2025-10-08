@@ -8,7 +8,7 @@ html, body {
 
 body {
     background-color: #181A1B;
-    color: #3B82F6;
+    color: #E2E8F0; /* High contrast light gray for body text */
     min-height: 100vh;
 }
 
@@ -46,7 +46,7 @@ body {
 
 .navbar, .card, .dropdown-menu, .modal-content {
     background-color: #23272A !important;
-    color: #3B82F6 !important;
+    color: #E2E8F0 !important; /* High contrast light gray */
     border-color: rgba(59, 130, 246, 0.35) !important;
 }
 
@@ -78,13 +78,13 @@ body {
 
 .list-group-item {
     background-color: #23272A !important;
-    color: #3B82F6 !important;
+    color: #E2E8F0 !important; /* High contrast light gray */
     border-color: #3B82F6 !important;
 }
 
 input, select, textarea {
     background-color: #23272A !important;
-    color: #3B82F6 !important;
+    color: #E2E8F0 !important; /* High contrast light gray */
     border-color: #3B82F6 !important;
 }
 
@@ -96,10 +96,29 @@ a, .text-decoration-none {
     color: #3B82F6 !important;
 }
 
-::-webkit-input-placeholder { color: #3B82F6; }
-::-moz-placeholder { color: #3B82F6; }
-:-ms-input-placeholder { color: #3B82F6; }
-::placeholder { color: #3B82F6; }
+::-webkit-input-placeholder { color: #CBD5E1; } /* Lighter gray for placeholders */
+::-moz-placeholder { color: #CBD5E1; }
+:-ms-input-placeholder { color: #CBD5E1; }
+::placeholder { color: #CBD5E1; }
+
+/* WCAG compliant text color overrides */
+.text-secondary {
+    color: #CBD5E1 !important; /* Lighter gray for secondary text */
+}
+
+.text-muted {
+    color: #9CA3AF !important; /* Accessible muted text */
+}
+
+/* Ensure all small text has good contrast */
+.small {
+    color: inherit;
+}
+
+/* Override Bootstrap text utilities for better contrast */
+.text-dark {
+    color: #E2E8F0 !important;
+}
 
 /* I tweak the scrollbars so they match the theme. */
 ::-webkit-scrollbar {
