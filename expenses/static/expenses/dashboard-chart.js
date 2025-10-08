@@ -1,15 +1,21 @@
 (function () {
+    'use strict';
+    
+    // Extract chart data from Django template JSON scripts
     const monthsEl = document.getElementById('dashboard-chart-months');
     const incomeEl = document.getElementById('dashboard-chart-income');
     const expenseEl = document.getElementById('dashboard-chart-expense');
+    
     if (!monthsEl || !incomeEl || !expenseEl) {
-        return;
+        return; // Exit if required data elements missing
     }
 
+    // Parse and validate numeric data series
     const labels = JSON.parse(monthsEl.textContent);
     const incomeRaw = JSON.parse(incomeEl.textContent).map((value) => Number(value));
     const expenseRaw = JSON.parse(expenseEl.textContent).map((value) => Number(value));
 
+    // Validate all values are numeric before proceeding
     if (incomeRaw.some((value) => Number.isNaN(value)) || expenseRaw.some((value) => Number.isNaN(value))) {
         console.warn('Ledgerly chart skipped: series contains non-numeric values.', {
             incomeRaw,
@@ -26,9 +32,10 @@
         });
     }
 
+    // Currency formatting with fallback for unsupported locales
     const ctx = document.getElementById('dashboardChart');
     if (!ctx || typeof Chart === 'undefined') {
-        return;
+        return; // Exit if canvas element or Chart.js library missing
     }
 
     const currencyCode = ctx.dataset.currencyCode || 'USD';
@@ -42,6 +49,7 @@
             maximumFractionDigits: 2,
         });
     } catch (error) {
+        // Fallback for unsupported currency codes
         console.warn('Ledgerly chart: falling back to symbol formatting.', { error });
         currencyFormatter = {
             format(value) {

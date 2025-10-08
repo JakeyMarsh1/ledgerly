@@ -34,7 +34,14 @@ def _is_ajax(request) -> bool:
 
 
 def _filter_transactions(queryset, search_query):
-    """Run the search term across my transaction fields, ignoring case."""
+    """
+    Filter transactions by search term across:
+    - Transaction name/description
+    - Category name
+    - Transaction type
+    - Note field content
+    Returns filtered queryset with case-insensitive matching
+    """
 
     if not search_query:
         return queryset
@@ -79,7 +86,14 @@ def _max_transaction_amount_display() -> str:
 
 @login_required
 def dashboard(request):
-    """Render my dashboard with the transaction form and monthly stats."""
+    """
+    Main dashboard view showing monthly financial summary with:
+    - Income vs expense breakdown for current month
+    - Recent transactions list (last 15)
+    - Chart data for last 12 cycles
+    - Quick-add transaction modals
+    - Search functionality
+    """
 
     # I only surface active categories so I can tag transactions cleanly.
     categories = Category.objects.filter(is_active=True)

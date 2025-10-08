@@ -1,4 +1,7 @@
-/* My Ledgerly dark theme: space gray with blue accents. */
+/* ==========================================================================
+   LEDGERLY DARK THEME - Space gray with blue accents
+   ========================================================================== */
+
 html, body {
     height: 100%;
 }
@@ -12,6 +15,23 @@ body {
 .dashboard-main {
     width: 100%;
     padding-bottom: 1.5rem;
+    /* ==========================================================================
+   TUG-OF-WAR PROGRESS BAR - Visual balance indicator (Income vs Expenses)
+   ========================================================================== */
+
+.tug-bar-wrapper {
+    margin-bottom: 1rem;
+}
+
+.tug-bar {
+    /* Visual balance indicator between income/expense */
+    position: relative;
+    height: 24px;
+    border-radius: 999px;
+    background: rgba(24, 26, 27, 0.75);
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.35);
+}
 }
 
 @media (min-width: 992px) and (max-width: 1399.98px) {
@@ -20,15 +40,14 @@ body {
     }
 }
 
+/* ==========================================================================
+   COMPONENT STYLING - Cards, Navigation, Modals
+   ========================================================================== */
+
 .navbar, .card, .dropdown-menu, .modal-content {
     background-color: #23272A !important;
     color: #3B82F6 !important;
     border-color: rgba(59, 130, 246, 0.35) !important;
-}
-
-/* Ensure dropdown appears above modals */
-.dropdown-menu {
-    z-index: 1060 !important;
 }
 
 .card {
@@ -141,7 +160,12 @@ a, .text-decoration-none {
     order: -1;
 }
 
+/* ==========================================================================
+   TRANSACTION CHART COMPONENT - Chart.js income/expense visualization
+   ========================================================================== */
+
 .dashboard-chart {
+    /* Fixed height container for Chart.js canvas */
     position: relative;
     width: 100%;
     min-height: 240px;

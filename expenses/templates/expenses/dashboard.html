@@ -17,10 +17,15 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
 {% if user.is_authenticated %}
-    <!-- I only render the main dashboard for authenticated users. -->
+    <!-- ==========================================================================
+         MAIN DASHBOARD NAVIGATION
+         ========================================================================== -->
     <nav class="navbar navbar-light bg-light">
         <div class="container-fluid px-4">
+            <!-- Brand logo/title linking back to dashboard -->
             <a class="navbar-brand mb-0 h1" href="{% url 'dashboard' %}">Ledgerly</a>
+            
+            <!-- User account dropdown menu -->
             <div class="ms-auto">
                 <span class="navbar-text mb-0 text-nowrap me-3">Welcome, {{ user.username }}!</span>
                 <div class="dropdown d-inline-block">
@@ -45,6 +50,10 @@
                     {% endfor %}
                 </div>
             {% endif %}
+            
+            <!-- ==========================================================================
+                 FINANCIAL SUMMARY CARDS & CHARTS
+                 ========================================================================== -->
             
             <!-- Top Row: Chart, Spend History, Top Expenses, Search -->
             <div class="row g-4 mb-4">
@@ -168,6 +177,10 @@
                 </div>
             </div>
 
+            <!-- ==========================================================================
+                 MONTHLY BUDGET OVERVIEW & QUICK ACTIONS
+                 ========================================================================== -->
+            
             <!-- Bottom Row: Monthly Budget and Quick Actions -->
             <div class="row g-4">
                 <div class="col-md-6">
@@ -409,7 +422,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="transactionCalendarModal" tabindex="-1" aria-hidden="true" aria-labelledby="transactionCalendarLabel" data-calendar-url="{% url 'transaction_calendar_data' %}">
+    <div class="modal fade" id="transactionCalendarModal" tabindex="-1" aria-labelledby="transactionCalendarLabel" data-calendar-url="{% url 'transaction_calendar_data' %}">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content calendar-modal">
                 <div class="modal-header border-0 pb-0">
