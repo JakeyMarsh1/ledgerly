@@ -67,12 +67,20 @@ Ledgerly helps users understand what they can safely spend this week by combinin
 
 ## Screenshots
 
-*Replace with actual screenshots in `assets/readme_images/`.*
 
 | Dashboard | Add Outgoing | Transactions | Dashboard Mobile |
 |-----------|--------------|--------------|-----------------|
-| ![Dashboard](assets/readme_images/erd.png) | ![Add Outgoing](assets/readme_images/erd.png) | ![Transactions](assets/readme_images/erd.png) | ![Dashboard Mobile](assets/readme_images/erd.png) |
+| ![Dashboard](assets/readme_images/dashboard.png) | ![Add Outgoing](assets/readme_images/expenses.png) | ![Transactions](assets/readme_images/transaction.png) | ![Dashboard Mobile](assets/readme_images/mobile_dash.png) |
 
+<details>
+  <summary>Click to expand Screenshots</summary>
+
+  ![Dashboard](assets/readme_images/dashboard.png)
+  ![Add Outgoing](assets/readme_images/expenses.png)
+  ![Transactions](assets/readme_images/transaction.png)
+  ![Dashboard Mobile](assets/readme_images/mobile_dash.png)
+
+</details>
 ---
 
 ## Wireframe
