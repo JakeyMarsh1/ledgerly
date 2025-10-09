@@ -16,6 +16,8 @@ A simple Django + Postgres web app to record incomes and outgoings, showing a mo
 ## Table of Contents
 - [Features](#features)
 - [Accessibility](#accessibility)
+- [Screenshots](#Screenshots)
+- [Testing](#Testing)
 - [Overview](#overview)
 - [Problem](#problem)
 - [Solution](#solution)
@@ -33,28 +35,30 @@ A simple Django + Postgres web app to record incomes and outgoings, showing a mo
 ---
 
 ## Features
-Dashboard: shows current-month “available to spend” and recent transactions.
+- Dashboard: shows current-month “available to spend” and recent transactions.
 
-Transactions: add, edit, and delete incomes and outgoings.
+- Transactions: add, edit, and delete incomes and outgoings.
 
-Categories: global list; required for outgoings, optional for incomes.
+- Categories: global list; required for outgoings, optional for incomes.
 
-Authentication: sign up, log in, log out; per-user data isolation.
+- Authentication: sign up, log in, log out; per-user data isolation.
 
-Data integrity: store money in integer pence; format in views/templates.
+- Data integrity: store money in integer pence; format in views/templates.
 
 ## Accessibility
-Semantic structure: use headings, labels, and descriptive button text for assistive tech.
+- Semantic structure: use headings, labels, and descriptive button text for assistive tech.
 
-Keyboard navigation: all interactive elements are reachable via Tab with a visible focus outline.
+- Keyboard navigation: all interactive elements are reachable via Tab with a visible focus outline.
 
-Color and contrast: palette chosen to target WCAG AA contrast for text and controls.
+- Color and contrast: palette chosen to target WCAG AA contrast for text and controls.
 
-Forms: inputs have associated labels; errors and status messages are announced near the form heading.
+- Forms: inputs have associated labels; errors and status messages are announced near the form heading.
 
-Touch targets: primary actions sized for comfortable tapping on mobile (approx. 44px minimum).
+- Touch targets: primary actions sized for comfortable tapping on mobile (approx. 44px minimum).
 
-Motion and feedback: no auto-playing or flashing content; feedback uses simple text alerts.
+- Motion and feedback: no auto-playing or flashing content; feedback uses simple text alerts.
+
+## Screenshots
 
 ![Dashboard](assets/readme_images/dashboard Outgoing form)
 ![Add Outgoing](assets/readme_images/add_out list)
@@ -74,6 +78,18 @@ Categories      |  Validation           |  Submit outgoing without category  |  
 Dashboard       |  Total recalculation  |  Create/edit/delete transactions   |  “Available to spend” updates immediately  |  ✅   
 Security        |  Data isolation       |  Log in as second user             |  Only that user’s data visible             |  ✅   
 Responsiveness  |  Mobile view          |  Use a small viewport              |  Layout remains readable and usable        |  ✅   
+
+Validator results:
+
+HTML
+
+CSS
+
+Python
+
+JS
+
+Known bugs / fixes
 
 ## Overview
 Ledgerly helps users understand what they can safely spend this week by combining all recorded incomes and outgoings into one clear number. The app focuses on minimal screens, fast entry, and accurate calculations.
