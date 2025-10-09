@@ -14,6 +14,8 @@ A simple Django + Postgres web app to record incomes and outgoings, showing a mo
 ---
 
 ## Table of Contents
+- [Features](#features)
+- [Accessibility](#accessibility)
 - [Overview](#overview)
 - [Problem](#problem)
 - [Solution](#solution)
@@ -40,6 +42,38 @@ Categories: global list; required for outgoings, optional for incomes.
 Authentication: sign up, log in, log out; per-user data isolation.
 
 Data integrity: store money in integer pence; format in views/templates.
+
+## Accessibility
+Semantic structure: use headings, labels, and descriptive button text for assistive tech.
+
+Keyboard navigation: all interactive elements are reachable via Tab with a visible focus outline.
+
+Color and contrast: palette chosen to target WCAG AA contrast for text and controls.
+
+Forms: inputs have associated labels; errors and status messages are announced near the form heading.
+
+Touch targets: primary actions sized for comfortable tapping on mobile (approx. 44px minimum).
+
+Motion and feedback: no auto-playing or flashing content; feedback uses simple text alerts.
+
+![Dashboard](assets/readme_images/dashboard Outgoing form)
+![Add Outgoing](assets/readme_images/add_out list)
+![Transactions](assets/readme_images/transactions dashboard)
+![Dashboard Mobile](assets/readme_images/dashboard the folder assets/readme_images/)
+
+## Testing
+Area            |  Test                 |  Steps                             |  Expected                                  |  Result
+----------------+-----------------------+------------------------------------+--------------------------------------------+--------
+Auth            |  Sign up              |  Register a new account            |  User created and logged in                |  ✅  
+Auth            |  Log in/out           |  Log in, then log out              |  Session starts/ends correctly             |  ✅   
+Transactions    |  Add income           |  Create income with valid data     |  Appears in list; total updates            |  ✅   
+Transactions    |  Add outgoing         |  Create outgoing with category     |  Appears in list; total updates            |  ✅  
+Transactions    |  Edit                 |  Edit an existing transaction      |  Changes persist; total recalcs            |  ✅  
+Transactions    |  Delete               |  Delete an existing transaction    |  Row removed; total recalcs                |  ✅   
+Categories      |  Validation           |  Submit outgoing without category  |  Form blocks submit with clear error       |  ✅   
+Dashboard       |  Total recalculation  |  Create/edit/delete transactions   |  “Available to spend” updates immediately  |  ✅   
+Security        |  Data isolation       |  Log in as second user             |  Only that user’s data visible             |  ✅   
+Responsiveness  |  Mobile view          |  Use a small viewport              |  Layout remains readable and usable        |  ✅   
 
 ## Overview
 Ledgerly helps users understand what they can safely spend this week by combining all recorded incomes and outgoings into one clear number. The app focuses on minimal screens, fast entry, and accurate calculations.
