@@ -1,42 +1,3 @@
-Ledgerly 
-
-A simple Django + Postgres web app to record incomes and outgoings and show a weekly “available to spend” total. Built for clarity, speed, and a small, focused MVP, with room for future insights like average spend and a lightweight blog.
-
-Table of Contents
-Overview
-
-Problem
-
-Solution
-
-Scope
-
-MVP
-
-Ideation
-
-Information Architecture
-
-User Stories
-
-Tech Stack
-
-Setup
-
-Roadmap
-
-Contributing
-
-License
-
-Overview
-Weekwise Budget helps users understand what they can safely spend this week by combining all recorded incomes and outgoings into one clear number. The app focuses on minimal screens, fast entry, and accurate calculations.
-
-Problem
-Budget tools can feel heavy or too granular. Many people just want one trusted weekly number without spreadsheets or manual sums.
-
-Solution
-Quick forms for incomes and outgoings.
 
 <p align="center">
 	<img src="https://img.shields.io/github/actions/workflow/status/JakeyMarsh1/ledgerly/django.yml?branch=main&label=build" alt="Build Status" />
@@ -48,7 +9,7 @@ Quick forms for incomes and outgoings.
 
 # Ledgerly
 
-A simple Django + Postgres web app to record incomes and outgoings, showing a weekly “available to spend” total. Built for clarity, speed, and a focused MVP, with room for future insights like average spend and a lightweight blog.
+A simple Django + Postgres web app to record incomes and outgoings, showing a monthly “available to spend” total. Built for clarity, speed, and a focused MVP, with room for future insights like average spend.
 
 ---
 
@@ -69,11 +30,22 @@ A simple Django + Postgres web app to record incomes and outgoings, showing a we
 
 ---
 
+## Features
+Dashboard: shows current-month “available to spend” and recent transactions.
+
+Transactions: add, edit, and delete incomes and outgoings.
+
+Categories: global list; required for outgoings, optional for incomes.
+
+Authentication: sign up, log in, log out; per-user data isolation.
+
+Data integrity: store money in integer pence; format in views/templates.
+
 ## Overview
 Ledgerly helps users understand what they can safely spend this week by combining all recorded incomes and outgoings into one clear number. The app focuses on minimal screens, fast entry, and accurate calculations.
 
 ## Problem
-Budget tools can feel heavy or too granular. Many people just want one trusted weekly number without spreadsheets or manual sums.
+Budget tools can feel heavy or too granular. Many people just want one trusted monthly number without spreadsheets or manual sums.
 
 ## Solution
 - Quick forms for incomes and outgoings
@@ -98,13 +70,13 @@ Budget tools can feel heavy or too granular. Many people just want one trusted w
 
 ## MVP
 The MVP delivers:
-- Dashboard with “available to spend” for the current week
+- Dashboard with “available to spend” for the current month
 - Add/edit/delete incomes and outgoings
 - Recent transactions list
 - Secure per-user data isolation
 
 **Success criteria:**
-- Entering a transaction updates the weekly total immediately
+- Entering a transaction updates the monthly total immediately
 - Core pages are simple to navigate and responsive
 
 ## Ideation

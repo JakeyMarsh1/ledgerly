@@ -15,7 +15,9 @@ body {
 .dashboard-main {
     width: 100%;
     padding-bottom: 1.5rem;
-    /* ==========================================================================
+}
+
+/* ==========================================================================
    TUG-OF-WAR PROGRESS BAR - Visual balance indicator (Income vs Expenses)
    ========================================================================== */
 
@@ -31,7 +33,6 @@ body {
     background: rgba(24, 26, 27, 0.75);
     overflow: hidden;
     box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.35);
-}
 }
 
 @media (min-width: 992px) and (max-width: 1399.98px) {
