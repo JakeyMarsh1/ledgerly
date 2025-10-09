@@ -364,6 +364,8 @@ ledgerly/
 - **Known Bugs/Fixes:**  
 	- None observed in core flows during manual testing; will update as issues are reported.  
 	- Unused variable in `js.chart` not recognized. No fix available at this time.
+	- Resolved a parse error by updating the tug-of-war bar to set `--percent` values with units in the template and reading them directly in CSS (no `calc()`).
+	![CSS Validator Update](assets/readme_images/css_updated.png)
 
 --- 
 
