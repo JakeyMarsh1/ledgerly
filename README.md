@@ -50,6 +50,12 @@ Ledgerly helps users understand what they can safely spend this month by combini
 - Authentication: sign up, log in, log out; per-user data isolation.
 - Data integrity: store money in integer pence; format in views/templates.
 
+## Screenshots
+
+| Dashboard | Add Outgoing | Transactions | Dashboard Mobile |
+|-----------|--------------|--------------|-----------------|
+| ![Dashboard](assets/readme_images/dashboard.png) | ![Add Outgoing](assets/readme_images/expenses.png) | ![Transactions](assets/readme_images/transaction.png) | ![Dashboard Mobile](assets/readme_images/mobile_dash.png) |
+
 ---
 
 ## Accessibility
@@ -331,7 +337,7 @@ ledgerly/
 - **CSS:**  
 	- Tool: W3C CSS Validator  
 	- Date: 09-Oct-2025  
-	- Status: Pass  
+	- Status: Pass (1 error)  
 		![CSS Validator](assets/readme_images/css_validator.png)
 
 - **Python:**  

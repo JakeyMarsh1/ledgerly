@@ -525,7 +525,7 @@ a:focus,
     position: absolute;
     top: 0;
     bottom: 0;
-    width: calc(var(--percent, 0) * 1%);
+    width: var(--percent, 0);
     transition: width 0.4s ease;
 }
 
