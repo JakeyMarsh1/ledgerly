@@ -318,6 +318,39 @@ Demo users cannot create/edit/delete; a friendly banner is shown.
 All current user stories are tracked on the project board:  
 [User Stories & Project Board](https://github.com/users/JakeyMarsh1/projects/9/views/1)
 
+## Epics
+Secure access and data isolation
+
+Sign up, log in, log out; session-based access ensuring each user only sees their own data.
+
+Weekly available-to-spend dashboard
+
+Single weekly total, recalculated immediately after transaction changes.
+
+Transaction lifecycle
+
+Add income, add outgoing (with active category), edit/delete transactions, recent list with pagination.
+
+Category administration
+
+Global categories with visibility controls; archived categories remain linked but hidden from forms.
+
+Focused insights
+
+Filter by week and category; lightweight operational reporting (planned).
+
+Admin management
+
+Browse/search/edit users, categories, transactions via Django Admin.
+
+Data import/export and attachments
+
+CSV import/export and receipt/file attachments (planned).
+
+Safe demo exploration
+
+Read-only demo users for stakeholder walkthroughs (planned).
+
 ## Tech Stack
 - **Backend:** Django (Python), Django Admin
 - **Database:** PostgreSQL
