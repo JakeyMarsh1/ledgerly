@@ -61,10 +61,11 @@ Ledgerly helps users understand what they can safely spend this month by combini
 - Touch targets: primary actions sized for comfortable tapping on mobile (approx. 44px minimum).
 - Motion and feedback: no auto-playing or flashing content; feedback uses simple text alerts.
 
+![Lighthouse](assets/readme_images/lighthouse.png)
+
 ---
 
 ## Screenshots
-
 
 | Dashboard | Add Outgoing | Transactions | Dashboard Mobile |
 |-----------|--------------|--------------|-----------------|
@@ -188,6 +189,8 @@ I used the MoSCoW prioritization method to classify features and tasks:
 - **Could Have:** Nice-to-have features that enhance user experience (e.g., CSV import/export, receipt attachments).  
 - **Won't Have (for now):** Deferred features that may be revisited post-MVP (e.g., advanced analytics, social login).  
 
+![Agile](assets/readme_images/agile.png)
+
 ---
 
 ## Tech Stack
@@ -299,10 +302,8 @@ ledgerly/
 - Make sure your `requirements.txt` and `Procfile` are up to date.
 - If you use custom domains, configure them in the Heroku dashboard and set up DNS as needed.
 
-**Example Heroku App:**  
-[https://your-app-name.herokuapp.com/](https://your-app-name.herokuapp.com/)
-
----
+**Live App:**  
+[https://ledgerly-90931141abd8.herokuapp.com/](https://ledgerly-90931141abd8.herokuapp.com/)
 
 ## Testing
 
@@ -319,19 +320,46 @@ ledgerly/
 | Security      | Data isolation         | Log in as second user          | Only that user’s data visible              | ✅     |
 | Responsiveness| Mobile view            | Use a small viewport           | Layout remains readable and usable         | ✅     |
 
-<!-- Example screenshot, replace with your own -->
-<!-- ![Test Coverage Example](assets/readme_images/test_coverage.png) -->
+### Validation Results
 
-**Validator results:**  
-- HTML: W3C Markup Validation Service — pass/notes  
-- CSS: W3C CSS Validator — pass/notes  
-- Python: linter (e.g., Ruff/Flake8) — pass/notes  
-- JS: online linter (e.g., JSHint/ESLint) — pass/notes  
+- **HTML:**  
+	- Tool: W3C Markup Validation Service  
+	- Date: 09-Oct-2025  
+	- Status: Pass  
+		![HTML Validator](assets/readme_images/html_validator.png)
 
-**Known bugs/fixes:**  
-None observed in core flows during manual testing; will update as issues are reported.
+- **CSS:**  
+	- Tool: W3C CSS Validator  
+	- Date: 09-Oct-2025  
+	- Status: Pass  
+		![CSS Validator](assets/readme_images/css_validator.png)
 
----
+- **Python:**  
+	- Tool: [ruff/flake8 ](https://pep8ci.herokuapp.com/) 
+	- Date: 09-Oct-2025  
+	- Status: No errors  
+		![Python Linter](assets/readme_images/py_lint.png)
+
+- **JavaScript:**  
+	- Tool: JSHint  
+	- Date: 09-Oct-2025  
+	- Status: 1 warning (unused variable, fixed)  
+		![JS Linter](assets/readme_images/jshint.png)
+
+## Known Issues, Assumptions & Limitations
+
+- Validation messages may vary by browser defaults; ensure forms surface clear errors near the field and at the top of the form.
+- No CSV import/export yet; large historical imports require manual entry for now.
+- Category model is global; users cannot create private categories in the UI.
+- Money stored as integer pence and formatted at the view/template layer to avoid floating‑point errors.
+- Categories are shared across all users; OUTGO requires a category, INCOME does not.
+- Monthly “available to spend” derives from current month context and recent transactions; advanced analytics deferred.
+- Authentication relies on Django’s built‑in auth; no social login in MVP.
+- **Known Bugs/Fixes:**  
+	- None observed in core flows during manual testing; will update as issues are reported.  
+	- Unused variable in `js.chart` not recognized. No fix available at this time.
+
+--- 
 
 ## Known Issues, Assumptions & Limitations
 
@@ -353,18 +381,27 @@ None observed in core flows during manual testing; will update as issues are rep
 
 ---
 
+## Contributing
+
+- Open an issue or small PR
+- Use feature branches and concise commit messages
+- Add a simple test for each change
+
+---
+
 ## Usage of AI
 
 AI tools (such as GitHub Copilot and ChatGPT) were used to:
 - Plan and refine user stories and acceptance criteria.
 - Recommend and document the project’s file structure.
 - Generate baseplate/boilerplate code for Django views and HTML templates.
-- Debug code and suggest fixes for errors in Python, HTML, CSS, and JavaScript.
-- Generate and refactor code for new features and improve accessibility.
+- Debug code and suggest fixes for errors in Python, HTML, CSS, and JavaScript (e.g., resolving a CSS parse error that broke dashboard layout).
+- Generate and refactor code for new features and improve accessibility (e.g., suggesting ARIA attributes and color contrast fixes).
 - Perform automated code reviews and identify unused or duplicate code.
 - Draft and polish documentation, including this README.
+- Suggest performance and UX optimizations, such as simplifying dashboard queries and improving form usability.
 
-All code was reviewed and tested by the project owner before inclusion.
+AI accelerated development by providing quick scaffolds and suggestions, but all code and tests were reviewed and adapted by the project owner to ensure correctness and alignment with project goals.
 
 ---
 
@@ -376,3 +413,9 @@ All code was reviewed and tested by the project owner before inclusion.
 - [Heroku](https://www.heroku.com/) — deployment platform
 
 No proprietary or third-party code beyond these open-source libraries was used.
+
+---
+
+## License
+
+No license specified yet. All rights reserved by the project author.
