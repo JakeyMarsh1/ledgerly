@@ -1,9 +1,7 @@
 <p align="center">
-  <img src="https://img.shields.io/github/actions/workflow/status/JakeyMarsh1/ledgerly/django.yml?branch=main&label=build" alt="Build Status" />
-  <img src="https://img.shields.io/github/license/JakeyMarsh1/ledgerly" alt="License" />
-  <img src="https://img.shields.io/badge/python-3.11%2B-blue.svg" alt="Python Version" />
-  <img src="https://img.shields.io/badge/django-4.2-green.svg" alt="Django Version" />
-  <a href="https://github.com/users/JakeyMarsh1/projects/9/views/1"><img src="https://img.shields.io/badge/project%20board-User%20Stories-blue" alt="Project Board" /></a>
+<img src="https://img.shields.io/badge/python-3.11%2B-blue.svg" alt="Python Version" />
+<img src="https://img.shields.io/badge/django-4.2-green.svg" alt="Django Version" />
+<a href="https://github.com/users/JakeyMarsh1/projects/9/views/1"><img src="https://img.shields.io/badge/project%20board-User%20Stories-blue" alt="Project Board" /></a>
 </p>
 
 # Ledgerly
@@ -40,7 +38,7 @@ Ledgerly is a simple Django + Postgres web app to record incomes and outgoings, 
 
 ## Overview
 
-Ledgerly helps users understand what they can safely spend this week by combining all recorded incomes and outgoings into one clear number. The app focuses on minimal screens, fast entry, and accurate calculations.
+Ledgerly helps users understand what they can safely spend this month by combining all recorded incomes and outgoings into one clear number. The app focuses on minimal screens, fast entry, and accurate calculations.
 
 ---
 
@@ -135,7 +133,7 @@ This diagram represents the relationships between the `User`, `Transaction`, and
 
 ## Information Architecture
 
-- **Dashboard:** Weekly total and a small summary
+- **Dashboard:** Monthly total and a small summary
 - **Transactions:** List, add income, add outgoing, edit/delete
 - **Categories:** Simple admin-managed list; dropdown on outgoing form
 - **Auth:** Sign up, log in, log out
@@ -191,7 +189,13 @@ All current user stories are tracked on the [Project Board](https://github.com/u
 
 ## Agile Development
 
-This project is managed using agile practices. User stories, tasks, and progress are tracked on the [Project Board](https://github.com/users/JakeyMarsh1/projects/9/views/1).
+This project is managed using agile practices. User stories, tasks, and progress are tracked on the [Project Board](https://github.com/users/JakeyMarsh1/projects/9/views/1).  
+
+I used the MoSCoW prioritization method to classify features and tasks:  
+- **Must Have:** Essential for the MVP to function correctly (e.g., transaction CRUD, user authentication).  
+- **Should Have:** Important but not critical for the MVP (e.g., category management, responsive design).  
+- **Could Have:** Nice-to-have features that enhance user experience (e.g., CSV import/export, receipt attachments).  
+- **Won't Have (for now):** Deferred features that may be revisited post-MVP (e.g., advanced analytics, social login).  
 
 ---
 
@@ -199,8 +203,12 @@ This project is managed using agile practices. User stories, tasks, and progress
 
 - **Backend:** Django (Python), Django Admin
 - **Database:** PostgreSQL
-- **Templating:** Django templates; minimal JS (Chart.js later)
-- **Auth:** Django auth (email login optional)
+- **Templating:** Django templates
+- **Frontend:** Bootstrap (CSS), custom CSS (`style.css`, `metallic-bg.css`), custom JavaScript (`dashboard-chart.js`, `dashboard-search.js`)
+- **Charts:** Chart.js (dashboard visualizations)
+- **Authentication:** Django auth (email login optional)
+- **Deployment:** Heroku
+- **CI/CD:** GitHub Actions
 
 ---
 
@@ -354,17 +362,12 @@ None observed in core flows during manual testing; will update as issues are rep
 
 ---
 
-## Contributing
-
-- Open an issue or small PR
-- Use feature branches and concise commit messages
-- Add a simple test for each change
-
----
-
 ## Usage of AI
 
 AI tools (such as GitHub Copilot and ChatGPT) were used to:
+- Plan and refine user stories and acceptance criteria.
+- Recommend and document the project’s file structure.
+- Generate baseplate/boilerplate code for Django views and HTML templates.
 - Debug code and suggest fixes for errors in Python, HTML, CSS, and JavaScript.
 - Generate and refactor code for new features and improve accessibility.
 - Perform automated code reviews and identify unused or duplicate code.
@@ -382,9 +385,3 @@ All code was reviewed and tested by the project owner before inclusion.
 - [Heroku](https://www.heroku.com/) — deployment platform
 
 No proprietary or third-party code beyond these open-source libraries was used.
-
----
-
-## License
-
-Specify a license (e.g., MIT) in LICENSE
