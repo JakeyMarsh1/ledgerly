@@ -70,15 +70,6 @@ Ledgerly helps users understand what they can safely spend this month by combini
 |-----------|--------------|--------------|-----------------|
 | ![Dashboard](assets/readme_images/dashboard.png) | ![Add Outgoing](assets/readme_images/expenses.png) | ![Transactions](assets/readme_images/transaction.png) | ![Dashboard Mobile](assets/readme_images/mobile_dash.png) |
 
-<details>
-  <summary>Click to expand Screenshots</summary>
-
-  ![Dashboard](assets/readme_images/dashboard.png)
-  ![Add Outgoing](assets/readme_images/expenses.png)
-  ![Transactions](assets/readme_images/transaction.png)
-  ![Dashboard Mobile](assets/readme_images/mobile_dash.png)
-
-</details>
 ---
 
 ## Wireframe
