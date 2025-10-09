@@ -201,6 +201,120 @@ This diagram represents the relationships between the `User`, `Transaction`, and
 
 ---
 ## User Stories
+User Stories (delivered)
+As a user, I can view my “available to spend” total for the current week so that I immediately know what I can safely spend without overshooting my budget.
+
+Acceptance:
+
+Computes weekly total as sum(incomes) − sum(outgoings) for the current week.
+
+Uses only the signed-in user’s data.
+
+Week defaults to Monday–Sunday; shows 0.00 if no data.
+
+As a user, I can record an income with amount and date (plus optional source and note) so that my inflows are accurately included in weekly availability.
+
+Acceptance:
+
+Amount > 0 and date required; saved as INCOME.
+
+On success, redirect to a relevant page and show a success message.
+
+As a user, I can record an expense with amount, date, and category (plus optional note) so that my outflows are properly tracked and categorized.
+
+Acceptance:
+
+Amount > 0, date, and category required; saved as OUTGO.
+
+Category must be chosen from the active list.
+
+As a user, I can edit or delete my own transactions so that mistakes don’t distort my weekly availability or reports.
+
+Acceptance:
+
+Can edit/delete only transactions owned by the signed-in user.
+
+Delete requires a simple confirmation; totals recalculate.
+
+As a user, I can see a paginated list of my recent transactions ordered by newest first so that I can quickly confirm entries and spot anomalies.
+
+Acceptance:
+
+Shows date, type, amount, category/source, and a short note snippet.
+
+Ordered newest first; 25 per page; only the signed-in user’s data.
+
+As a user, I can create an account, sign in, and sign out so that my financial data remains private and secure.
+
+Acceptance:
+
+Register with unique email and password.
+
+Login starts a session; logout clears session.
+
+Success/error messages are shown appropriately.
+
+As an admin, I can browse, search, and edit users, categories, and transactions so that I can support users and keep data consistent.
+
+Acceptance:
+
+Models visible in Django Admin with list_display, filters, and basic search.
+
+As a user, I can assign an active category to each outgoing so that my spending can be grouped for quick insights.
+
+Acceptance:
+
+Only active categories are selectable on the form.
+
+User Stories (planned)
+As a user, I can filter transactions by week and category so that I can answer targeted spending questions.
+
+Acceptance:
+
+Filters via URL query params; results update list and totals.
+
+As a user, I can set my preferred weekly start day so that weekly availability matches how I plan my budget.
+
+Acceptance:
+
+Preference (0–6) changes week calculation and displays accordingly.
+
+As an admin, I can create default categories and archive categories so that users see a clean, relevant set.
+
+Acceptance:
+
+Archived categories remain linked for history but don’t appear in forms.
+
+As an admin, I can view weekly counts of created, edited, and deleted transactions so that I can detect usability issues and training needs.
+
+Acceptance:
+
+Simple counts per week on a staff-only page.
+
+As a user, I can attach receipts or files to a transaction so that I have evidence and context.
+
+Acceptance:
+
+Upload small images/PDFs; show a thumbnail or download link.
+
+As a user, I can import transactions from a CSV file so that I can batch-load my financial data efficiently.
+
+Acceptance:
+
+Upload CSV, preview parsed rows, confirm import.
+
+As a user, I can export my (filtered) transactions to CSV so that I can back up or analyze externally.
+
+Acceptance:
+
+Download CSV for current filters with headers.
+
+As an admin, I can flag accounts as read-only demo users so that stakeholders can explore safely without changing data.
+
+Acceptance:
+
+Demo users cannot create/edit/delete; a friendly banner is shown.
+
 All current user stories are tracked on the project board:  
 [User Stories & Project Board](https://github.com/users/JakeyMarsh1/projects/9/views/1)
 
@@ -213,6 +327,57 @@ All current user stories are tracked on the project board:
 ## Setup
 **Requirements:** Python 3.11+, PostgreSQL 14+
 
+# Deployment
+
+## Heroku Deployment (via GitHub)
+
+1. **Push to GitHub**
+   - Make sure all changes are committed and pushed to your main branch on GitHub.
+
+2. **Connect Heroku to GitHub**
+   - In your Heroku dashboard, go to your app’s “Deploy” tab.
+   - Under “Deployment method,” select **GitHub** and connect your repository.
+
+3. **Set Config Vars**
+   - In the “Settings” tab, add your environment variables (e.g., `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`, `DATABASE_URL`, etc.) under “Config Vars.”
+
+4. **Automatic Deploys**
+   - Enable “Automatic Deploys” from the main branch if you want Heroku to redeploy on every push.
+
+5. **Manual Deploy**
+   - You can also trigger a manual deploy by clicking “Deploy Branch” in the Heroku dashboard.
+
+6. **Static Files**
+   - Heroku will run `python manage.py collectstatic` automatically during the build process.
+   - Make sure your `STATIC_ROOT` and `STATICFILES_STORAGE` are set correctly in `settings.py`.
+
+7. **Database Migrations**
+   - After deployment, run migrations:
+     ```bash
+     heroku run python manage.py migrate
+     ```
+
+8. **Create Superuser (Optional)**
+   - To access the Django admin panel:
+     ```bash
+     heroku run python manage.py createsuperuser
+     ```
+
+9. **Check Your App**
+   - Visit your Heroku app’s URL to confirm everything is working.
+
+---
+
+**Note:**  
+- Make sure your `requirements.txt` and `Procfile` are up to date.
+- If you use custom domains, configure them in the Heroku dashboard and set up DNS as needed.
+
+---
+
+**Example Heroku App:**  
+[https://your-app-name.herokuapp.com/](https://your-app-name.herokuapp.com/)
+.
+
 **Steps:**
 1. Clone the repo and create a virtualenv
 2. Install dependencies: `pip install -r requirements.txt`
@@ -220,6 +385,26 @@ All current user stories are tracked on the project board:
 4. Run migrations: `python manage.py migrate`
 5. Create a superuser: `python manage.py createsuperuser`
 6. Start the server: `python manage.py runserver`
+
+## Known Issues
+
+Validation messages may vary by browser defaults; ensure forms surface clear errors near the field and at the top of the form.
+
+Screenshot assets are placeholders until images are added under assets/readme_images/.
+
+No CSV import/export yet; large historical imports require manual entry for now.
+
+Category model is global; users cannot create private categories in the UI.
+
+## Assumptions and Limitations
+
+Money stored as integer pence and formatted at the view/template layer to avoid floating‑point errors.
+
+Categories are shared across all users; OUTGO requires a category, INCOME does not.
+
+Weekly “available to spend” derives from current month context and recent transactions; advanced analytics deferred.
+
+Authentication relies on Django’s built‑in auth; no social login in MVP.
 
 ## Roadmap
 - **MVP:** dashboard, transaction CRUD, auth, admin
