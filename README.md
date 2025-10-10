@@ -338,7 +338,7 @@ I used the MoSCoW prioritization method to classify features and tasks:
 - **JavaScript:**  
     - Tool: JSHint  
     - Date: 09-Oct-2025  
-    - Status: 1 warning (unused variable, fixed)  
+    - Status: 1 warning (unused variable, due to chart.js import not being picked up)  
         ![JS Linter](assets/readme_images/jshint.png)
 
 ---
