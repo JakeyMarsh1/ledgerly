@@ -65,6 +65,8 @@ Ledgerly helps users understand what they can safely spend this month by combini
 - Touch targets: primary actions sized for comfortable tapping on mobile (approx. 44px minimum).
 - Motion and feedback: no auto-playing or flashing content; feedback uses simple text alerts.
 
+![High-contrast notification banner showing login success feedback](assets/readme_images/notification_banner.png)
+
 ![Lighthouse](assets/readme_images/lighthouse.png)
 
 ---
@@ -324,7 +326,8 @@ I used the MoSCoW prioritization method to classify features and tasks:
     - Date: 09-Oct-2025  
     - Status: Pass  
     - Notes: Resolved a parse error by updating the tug-of-war bar to set `--percent` values with units in the template and reading them directly in CSS (no `calc()`).  
-        ![CSS Validator Update](assets/readme_images/css_updated.png)
+      ![CSS Validator Pass screen](assets/readme_images/css_validator.png)
+      ![CSS Validator Update](assets/readme_images/css_updated.png)
 
 - **Python:**  
     - Tool: [ruff/flake8 ](https://pep8ci.herokuapp.com/) 
