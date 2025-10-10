@@ -70,7 +70,14 @@
                                 <button type="button" class="btn btn-outline-primary dashboard-chart-toggle__button dashboard-chart-toggle__button--expense active" data-series="expense" aria-pressed="true">Expenses</button>
                             </div>
                             <div class="dashboard-chart" data-currency-symbol="{{ currency_symbol }}" data-currency-code="{{ currency_code }}">
-                                <canvas id="dashboardChart" class="dashboard-chart__canvas" role="img" aria-label="Line chart showing income and expenses for the last twelve cycles"></canvas>
+                                <canvas
+                                    id="dashboardChart"
+                                    class="dashboard-chart__canvas"
+                                    role="img"
+                                    aria-label="Line chart showing income and expenses for the last twelve cycles"
+                                    data-currency-code="{{ currency_code }}"
+                                    data-currency-symbol="{{ currency_symbol }}"
+                                ></canvas>
                                 <div class="dashboard-chart__empty small text-secondary text-center d-none">
                                     Not enough data yet. Add income and expenses to see your trend.
                                 </div>
