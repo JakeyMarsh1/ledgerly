@@ -484,6 +484,7 @@
     <script src="{% static 'expenses/dashboard-modal.js' %}"></script>
     <script src="{% static 'expenses/dashboard-search.js' %}"></script>
     <script src="{% static 'expenses/dashboard-calendar.js' %}"></script>
+    <script src="{% static 'expenses/modal-focus-guard.js' %}"></script>
 {% else %}
     <!-- If a visitor isn't authenticated, I send them to the login screen. -->
     <script src="{% static 'expenses/dashboard-login-redirect.js' %}" data-login-url="{% url 'account_login' %}"></script>
