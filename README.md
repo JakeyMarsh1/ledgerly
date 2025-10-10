@@ -4,6 +4,10 @@
 <a href="https://github.com/users/JakeyMarsh1/projects/9/views/1"><img src="https://img.shields.io/badge/project%20board-User%20Stories-blue" alt="Project Board" /></a>
 </p>
 
+<p align="center">
+  <img src="assets/readme_images/responsivity.png" alt="Responsivity Screenshot" style="max-width: 100%; border-radius: 12px;" />
+</p>
+
 # Ledgerly
 
 Ledgerly is a simple Django + Postgres web app to record incomes and outgoings, showing a monthly “available to spend” total. Built for clarity, speed, and a focused MVP, with room for future insights like average spend.
