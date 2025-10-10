@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="{% static 'expenses/metallic-bg.css' %}">
     {% include 'includes/head_icons.html' %}
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <!-- I keep a lightweight navbar that matches the dashboard header. -->
     <nav class="navbar navbar-light bg-light">
         <div class="container">
@@ -26,7 +26,7 @@
             {% endif %}
         </div>
     </nav>
-    <div class="container py-4">
+    <div class="container py-4 flex-grow-1">
     <!-- I reuse the branded heading for familiarity. -->
         <h1 class="mb-4 text-center"><u>Ledgerly</u></h1>
         <div class="row justify-content-center align-items-center min-vh-50">
@@ -56,6 +56,7 @@
             </div>
         </div>
     </div>
+    {% include 'includes/footer.html' %}
     <!-- I load the Bootstrap bundle to support interactive elements. -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
