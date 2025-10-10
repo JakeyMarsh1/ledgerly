@@ -33,7 +33,7 @@ except ImportError:
 # SECURITY WARNING: don't run with debug turned on in production!
 # Toggle Django debug features. Set to False when deploying to
 # production environments.
-DEBUG = True
+DEBUG = False
 
 # Hosts/domain names that this Django site can serve.
 ALLOWED_HOSTS = [
@@ -211,3 +211,5 @@ SITE_ID = 1
 # Post-login and login-required redirect destinations.
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/accounts/login/'
+
+X_FRAME_OPTIONS = 'ALLOWALL'
