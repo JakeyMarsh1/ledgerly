@@ -609,6 +609,24 @@ a:focus,
     border-color: rgba(59, 130, 246, 0.6) !important;
 }
 
+.modal-content input[type="date"] {
+    color-scheme: light;
+    position: relative;
+}
+
+.modal-content input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(66%) sepia(78%) saturate(748%) hue-rotate(179deg) brightness(105%) contrast(102%);
+    opacity: 0.95;
+    cursor: pointer;
+    transition: filter 0.2s ease, opacity 0.2s ease;
+}
+
+.modal-content input[type="date"]:hover::-webkit-calendar-picker-indicator,
+.modal-content input[type="date"]:focus-visible::-webkit-calendar-picker-indicator {
+    filter: invert(86%) sepia(37%) saturate(847%) hue-rotate(352deg) brightness(110%) contrast(105%);
+    opacity: 1;
+}
+
 .calendar-weekdays {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
