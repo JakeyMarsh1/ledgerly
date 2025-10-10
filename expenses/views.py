@@ -534,6 +534,7 @@ def custom_logout(request):
     """I log the user out and send them back to the login page."""
 
     logout(request)
+    messages.success(request, 'You have been logged out safely.')
     return redirect('account_login')
 
 
