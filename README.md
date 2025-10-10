@@ -23,12 +23,12 @@ Ledgerly is a simple Django + Postgres web app to record incomes and outgoings, 
 - [Wireframe](#wireframe)
 - [Entity Relationship Diagram (ERD)](#entity-relationship-diagram-erd)
 - [Information Architecture](#information-architecture)
+  - [Technical Stack](#technical-stack)
+  - [Project Structure](#project-structure)
 - [User Experience Design](#user-experience-design)
-- [User Stories](#user-stories)
-- [Epics](#epics)
-- [Agile Development](#agile-development)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
+  - [User Stories](#user-stories)
+  - [Epics](#epics)
+  - [Agile Development](#agile-development)
 - [Setup & Deployment](#setup--deployment)
 - [Testing](#testing)
 - [Known Issues, Assumptions & Limitations](#known-issues-assumptions--limitations)
@@ -53,12 +53,6 @@ Ledgerly helps users understand what they can safely spend this month by combini
 - Categories: global list; required for outgoings, optional for incomes.
 - Authentication: sign up, log in, log out; per-user data isolation.
 - Data integrity: store money in integer pence; format in views/templates.
-
-## Screenshots
-
-| Dashboard | Add Outgoing | Transactions | Dashboard Mobile |
-|-----------|--------------|--------------|-----------------|
-| ![Dashboard](assets/readme_images/dashboard.png) | ![Add Outgoing](assets/readme_images/expenses.png) | ![Transactions](assets/readme_images/transaction.png) | ![Dashboard Mobile](assets/readme_images/mobile_dash.png) |
 
 ---
 
@@ -140,15 +134,55 @@ This diagram represents the relationships between the `User`, `Transaction`, and
 - **Categories:** Simple admin-managed list; dropdown on outgoing form
 - **Auth:** Sign up, log in, log out
 
+### Technical Stack
+
+- **Backend:** Django (Python), Django Admin
+- **Database:** PostgreSQL
+- **Templating:** Django templates
+- **Frontend:** Bootstrap (CSS), custom CSS (`style.css`, `metallic-bg.css`), custom JavaScript (`dashboard-chart.js`, `dashboard-search.js`)
+- **Charts:** Chart.js (dashboard visualizations)
+- **Authentication:** Django auth (email login optional)
+- **Deployment:** Heroku
+- **CI/CD:** GitHub Actions
+
+### Project Structure
+
+```
+ledgerly/
+├── ledgerly/                  # Project config (settings, urls, wsgi)
+│   ├── __init__.py
+│   ├── settings.py
+│   ├── urls.py
+│   ├── wsgi.py
+│   └── asgi.py
+├── expenses/                  # Main app: dashboard, transactions, admin
+│   ├── admin.py
+│   ├── forms.py
+│   ├── models.py
+│   ├── views.py
+│   ├── urls.py
+│   ├── tests.py
+│   ├── templates/expenses/
+│   │   ├── dashboard.html
+│   │   ├── transaction_list.html
+│   │   └── ...
+│   └── static/expenses/
+│       ├── style.css
+│       ├── dashboard-chart.js
+│       └── ...
+├── assets/readme_images/       # Documentation screenshots
+├── manage.py
+├── requirements.txt
+└── README.md
+```
+
 ---
 
 ## User Experience Design
 
 Ledgerly is designed for clarity, speed, and minimalism. The interface uses clear headings, accessible forms, and responsive layouts to ensure users can quickly understand and manage their finances. User stories below guided the design and development process.
 
----
-
-## User Stories
+### User Stories
 
 **Delivered**
 
@@ -174,9 +208,7 @@ Ledgerly is designed for clarity, speed, and minimalism. The interface uses clea
 
 All current user stories are tracked on the [Project Board](https://github.com/users/JakeyMarsh1/projects/9/views/1).
 
----
-
-## Epics
+### Epics
 
 - **Secure access and data isolation:** Sign up, log in, log out; session-based access ensuring each user only sees their own data.
 - **Weekly available-to-spend dashboard:** Single weekly total, recalculated immediately after transaction changes.
@@ -187,70 +219,17 @@ All current user stories are tracked on the [Project Board](https://github.com/u
 - **Data import/export and attachments:** CSV import/export and receipt/file attachments (planned).
 - **Safe demo exploration:** Read-only demo users for stakeholder walkthroughs (planned).
 
----
+### Agile Development
 
-## Agile Development
-
-This project is managed using agile practices. User stories, tasks, and progress are tracked on the [Project Board](https://github.com/users/JakeyMarsh1/projects/9/views/1).  
+This project is managed using agile practices. User stories, tasks, and progress are tracked on the [Project Board](https://github.com/users/JakeyMarsh1/projects/9/views/1).
 
 I used the MoSCoW prioritization method to classify features and tasks:  
 - **Must Have:** Essential for the MVP to function correctly (e.g., transaction CRUD, user authentication).  
 - **Should Have:** Important but not critical for the MVP (e.g., category management, responsive design).  
 - **Could Have:** Nice-to-have features that enhance user experience (e.g., CSV import/export, receipt attachments).  
-- **Won't Have (for now):** Deferred features that may be revisited post-MVP (e.g., advanced analytics, social login).  
+- **Won’t Have (for now):** Deferred features that may be revisited post-MVP (e.g., advanced analytics, social login).  
 
 ![Agile](assets/readme_images/agile.png)
-
----
-
-## Tech Stack
-
-- **Backend:** Django (Python), Django Admin
-- **Database:** PostgreSQL
-- **Templating:** Django templates
-- **Frontend:** Bootstrap (CSS), custom CSS (`style.css`, `metallic-bg.css`), custom JavaScript (`dashboard-chart.js`, `dashboard-search.js`)
-- **Charts:** Chart.js (dashboard visualizations)
-- **Authentication:** Django auth (email login optional)
-- **Deployment:** Heroku
-- **CI/CD:** GitHub Actions
-
----
-
-## Project Structure
-
-```
-ledgerly/
-├── ledgerly/                  # Project config (settings, urls, wsgi)
-│   ├── __init__.py
-│   ├── settings.py
-│   ├── urls.py
-│   ├── wsgi.py
-│   └── asgi.py
-├── expenses/                  # Your main app (can be named 'expenses', 'core', etc.)
-│   ├── __init__.py
-│   ├── admin.py               # Register models for Django admin
-│   ├── apps.py
-│   ├── models.py              # User, Transaction, Category models
-│   ├── views.py               # Views for dashboard, CRUD, etc.
-│   ├── urls.py                # App-specific URLs
-│   ├── forms.py               # Django forms for input
-│   ├── tests.py               # Unit tests
-│   ├── migrations/
-│   │   └── __init__.py
-│   └── templates/
-│       └── expenses/
-│           ├── dashboard.html
-│           ├── transaction_list.html
-│           └── ...           # Other templates
-├── manage.py
-├── requirements.txt
-└── README.md
-```
-
-- Place your custom User model (if needed) and Transaction/Category models in `expenses/models.py`.
-- Use `expenses/views.py` for dashboard and CRUD logic.
-- Templates go in `expenses/templates/expenses/`.
-- Register your app in `INSTALLED_APPS` in `ledgerly/settings.py`.
 
 ---
 
@@ -315,6 +294,8 @@ ledgerly/
 **Live App:**  
 [https://ledgerly-90931141abd8.herokuapp.com/](https://ledgerly-90931141abd8.herokuapp.com/)
 
+---
+
 ## Testing
 
 | Area          | Test                   | Steps                          | Expected                                   | Result |
@@ -333,50 +314,35 @@ ledgerly/
 ### Validation Results
 
 - **HTML:**  
-	- Tool: W3C Markup Validation Service  
-	- Date: 09-Oct-2025  
-	- Status: Pass  
-		![HTML Validator](assets/readme_images/html_validator.png)
+    - Tool: W3C Markup Validation Service  
+    - Date: 09-Oct-2025  
+    - Status: Pass  
+        ![HTML Validator](assets/readme_images/html_validator.png)
 
 - **CSS:**  
-	- Tool: W3C CSS Validator  
-	- Date: 09-Oct-2025  
-	- Status: Pass (1 error)  
-		![CSS Validator](assets/readme_images/css_validator.png)
+    - Tool: W3C CSS Validator  
+    - Date: 09-Oct-2025  
+    - Status: Pass  
+    - Notes: Resolved a parse error by updating the tug-of-war bar to set `--percent` values with units in the template and reading them directly in CSS (no `calc()`).  
+        ![CSS Validator Update](assets/readme_images/css_updated.png)
 
 - **Python:**  
-	- Tool: [ruff/flake8 ](https://pep8ci.herokuapp.com/) 
-	- Date: 09-Oct-2025  
-	- Status: No errors  
-		![Python Linter](assets/readme_images/py_lint.png)
+    - Tool: [ruff/flake8 ](https://pep8ci.herokuapp.com/) 
+    - Date: 09-Oct-2025  
+    - Status: No errors  
+        ![Python Linter](assets/readme_images/py_lint.png)
 
 - **JavaScript:**  
-	- Tool: JSHint  
-	- Date: 09-Oct-2025  
-	- Status: 1 warning (unused variable, fixed)  
-		![JS Linter](assets/readme_images/jshint.png)
+    - Tool: JSHint  
+    - Date: 09-Oct-2025  
+    - Status: 1 warning (unused variable, fixed)  
+        ![JS Linter](assets/readme_images/jshint.png)
+
+---
 
 ## Known Issues, Assumptions & Limitations
 
 - Validation messages may vary by browser defaults; ensure forms surface clear errors near the field and at the top of the form.
-- No CSV import/export yet; large historical imports require manual entry for now.
-- Category model is global; users cannot create private categories in the UI.
-- Money stored as integer pence and formatted at the view/template layer to avoid floating‑point errors.
-- Categories are shared across all users; OUTGO requires a category, INCOME does not.
-- Monthly “available to spend” derives from current month context and recent transactions; advanced analytics deferred.
-- Authentication relies on Django’s built‑in auth; no social login in MVP.
-- **Known Bugs/Fixes:**  
-	- None observed in core flows during manual testing; will update as issues are reported.  
-	- Unused variable in `js.chart` not recognized. No fix available at this time.
-	- Resolved a parse error by updating the tug-of-war bar to set `--percent` values with units in the template and reading them directly in CSS (no `calc()`).
-	![CSS Validator Update](assets/readme_images/css_updated.png)
-
---- 
-
-## Known Issues, Assumptions & Limitations
-
-- Validation messages may vary by browser defaults; ensure forms surface clear errors near the field and at the top of the form.
-- Screenshot assets are placeholders until images are added under `assets/readme_images/`.
 - No CSV import/export yet; large historical imports require manual entry for now.
 - Category model is global; users cannot create private categories in the UI.
 - Money stored as integer pence and formatted at the view/template layer to avoid floating‑point errors.

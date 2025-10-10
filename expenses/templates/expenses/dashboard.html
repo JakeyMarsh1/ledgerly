@@ -207,8 +207,8 @@
                             <!-- Middle: Progress Bar -->
                             <div class="tug-bar-wrapper mb-4">
                                 <div class="tug-bar position-relative" aria-hidden="true">
-                                    <div class="tug-bar__income" style="--percent: {{ income_percent }};"></div>
-                                    <div class="tug-bar__expense" style="--percent: {{ expense_percent }};"></div>
+                                    <div class="tug-bar__income" style="--percent: {{ income_percent }}%;"></div>
+                                    <div class="tug-bar__expense" style="--percent: {{ expense_percent }}%;"></div>
                                     {% if income_percent == 0 and expense_percent == 0 %}
                                         <div class="tug-bar__empty text-primary small text-center px-3">
                                             Add income and expenses to see cycle progress.

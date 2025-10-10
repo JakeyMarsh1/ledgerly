@@ -167,25 +167,44 @@ a:focus,
     color: #E2E8F0 !important;
 }
 
-/* WCAG compliant close button styling */
+/* Alert styling: keep text dark and close button steady for readability */
+.alert {
+    color: #0f172a !important;
+}
+
+.alert a {
+    color: #0f172a !important;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
 .btn-close {
-    filter: invert(1) !important; /* Make close button white */
-    opacity: 0.8 !important;
-    background-size: 1.2em !important; /* Larger close icon */
-    width: 1.5em !important;
-    height: 1.5em !important;
-    transition: opacity 0.2s ease, transform 0.2s ease !important;
+    filter: none !important;
+    opacity: 0.75 !important;
+    background-size: 1em !important;
+    width: 1.25em !important;
+    height: 1.25em !important;
+    transition: opacity 0.2s ease !important;
 }
 
 .btn-close:hover,
 .btn-close:focus {
     opacity: 1 !important;
-    transform: scale(1.1) !important; /* Slightly larger on hover */
-    filter: invert(1) brightness(1.2) !important; /* Brighter on hover */
 }
 
 .btn-close:focus {
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5) !important; /* Blue focus ring */
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5) !important;
+}
+
+.alert.alert-dismissible {
+    position: relative;
+}
+
+.alert.alert-dismissible .btn-close {
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
 }
 
 /* I tweak the scrollbars so they match the theme. */
@@ -207,19 +226,6 @@ a:focus,
     scrollbar-width: thin;
     scrollbar-color: #3B82F6 transparent;
 }
-
-.alert.alert-dismissible {
-    position: relative;
-}
-
-.alert.alert-dismissible .btn-close {
-    position: absolute;
-    right: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-
 
 .dashboard-scroll-320 {
     max-height: 320px;
