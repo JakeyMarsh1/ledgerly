@@ -170,15 +170,27 @@
                                     </div>
                                 </div>
                             </div>
-                            <form method="get" action="{% url 'dashboard' %}" data-search-url="{% url 'transaction_search_results' %}" data-results-target="#search-results">
+                            <form method="get" action="{% url 'dashboard' %}" data-search-url="{% url 'transaction_search_results' %}" data-results-target="#search-results" data-message-target="#search-message">
                                 <div class="mb-3">
                                     <input type="search" name="q" class="form-control" placeholder="Search transactions..." value="{{ search_query }}" autocomplete="off">
                                 </div>
                             </form>
-                            <div id="search-results" class="dashboard-scroll-260 mt-2 {% if not search_query %}d-none{% endif %}">
+                                             <p id="search-message" class="small text-secondary mb-2"
+                                                 data-default-message="Recent activity"
+                                                 data-empty-message="No transactions to show yet."
+                                       data-found-prefix='Results for "'
+                                       data-found-suffix='"'>
+                                        {% if search_query %}Results for "{{ search_query }}"{% else %}Recent activity{% endif %}
+                                    </p>
+                            <div id="search-results" class="dashboard-scroll-260 mt-2">
                                 {% if search_query %}
                                     {% include 'expenses/search_results_list.html' with search_results=search_results currency_code=currency_code %}
+                                {% else %}
+                                    {% include 'expenses/search_results_list.html' with search_results=initial_search_results currency_code=currency_code empty_message='No transactions yet.' %}
                                 {% endif %}
+                            </div>
+                            <div id="search-default-template" class="d-none" data-has-results="{% if initial_search_results %}true{% else %}false{% endif %}">
+                                {% include 'expenses/search_results_list.html' with search_results=initial_search_results currency_code=currency_code empty_message='No transactions yet.' %}
                             </div>
                         </div>
                     </div>

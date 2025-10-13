@@ -14,6 +14,9 @@
     const messageSelector = form.dataset.messageTarget || '';
     const resultsContainer = resultsSelector ? document.querySelector(resultsSelector) : null;
     const messageElement = messageSelector ? document.querySelector(messageSelector) : null;
+    const defaultTemplate = document.getElementById('search-default-template');
+    const defaultHTML = defaultTemplate ? defaultTemplate.innerHTML : '';
+    const defaultHasResults = defaultTemplate ? defaultTemplate.dataset.hasResults === 'true' : Boolean(defaultHTML.trim());
 
     if (!searchUrl || !resultsContainer) {
         return;
@@ -50,12 +53,20 @@
 
     const renderResults = (html) => {
         resultsContainer.innerHTML = html;
-        // Show/hide the results container based on whether there's content
         if (html.trim()) {
             resultsContainer.classList.remove('d-none');
         } else {
             resultsContainer.classList.add('d-none');
         }
+    };
+
+    const resetToDefault = () => {
+        if (defaultHTML.trim()) {
+            renderResults(defaultHTML);
+        } else {
+            renderResults('');
+        }
+        updateMessage(defaultHasResults ? 'default' : 'empty');
     };
 
     const fetchSearchResults = async (term) => {
@@ -86,8 +97,7 @@
             if (error.name === 'AbortError') {
                 return;
             }
-            renderResults('');
-            updateMessage('default');
+            resetToDefault();
         } finally {
             searchController = null;
         }
@@ -111,8 +121,7 @@
                 debounceHandle = null;
             }
             abortSearch();
-            renderResults('');
-            updateMessage('default');
+            resetToDefault();
             return;
         }
 
@@ -125,8 +134,7 @@
 
         if (!term) {
             abortSearch();
-            renderResults('');
-            updateMessage('default');
+            resetToDefault();
             return;
         }
 
@@ -136,5 +144,12 @@
         }
         fetchSearchResults(term);
     });
+
+    const initialTerm = input.value.trim();
+    if (!initialTerm) {
+        resetToDefault();
+    } else {
+        updateMessage('results', initialTerm);
+    }
 
 })();

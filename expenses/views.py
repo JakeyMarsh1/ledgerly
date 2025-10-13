@@ -315,6 +315,7 @@ def dashboard(request):
         'expense_data': expense_data,
         'search_query': search_query,
         'search_results': search_results,
+        'initial_search_results': list(transactions[:10]),
         'top_expenses': top_expenses,
         'cycle_display_start': current_cycle_start,
         'cycle_display_end': current_cycle_end,
