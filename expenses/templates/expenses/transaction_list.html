@@ -56,7 +56,7 @@
                                         {% if transaction.type == 'OUTGO' %}-{% else %}+{% endif %}
                                         {{ transaction.amount_in_cents|cents_to_currency:currency_code }}
                                     </td>
-                                    <td>{{ transaction.category|default:'Uncategorized' }}</td>
+                                    <td>{{ transaction|display_category }}</td>
                                     <td>{{ transaction.occurred_on|date:'j M Y' }}</td>
                                     <td>
                                         <a href="{% url 'transaction_detail' transaction.pk %}" class="btn btn-outline-primary btn-sm">View</a>

@@ -103,7 +103,7 @@
                                                 </div>
                                                 <div class="small text-primary">
                                                     {{ t.occurred_on|date:'d M Y' }}<br>
-                                                    {{ t.category|default:'Uncategorized' }}
+                                                    {{ t|display_category }}
                                                 </div>
                                             </div>
                                         </li>
@@ -133,7 +133,7 @@
                                                 </div>
                                                 <div class="small text-primary">
                                                     {{ expense.occurred_on|date:'d M Y' }}<br>
-                                                    {{ expense.category|default:'Uncategorized' }}
+                                                    {{ expense|display_category }}
                                                     {% if expense.note %}<br><em>{{ expense.note|truncatechars:20 }}</em>{% endif %}
                                                 </div>
                                             </div>

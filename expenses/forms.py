@@ -40,10 +40,26 @@ class TransactionForm(forms.ModelForm):
         category_field = cast(forms.ModelChoiceField, self.fields['category'])
         category_field.required = False
         category_field.queryset = Category.objects.filter(is_active=True)
+        category_field.empty_label = 'N/A'
         self.fields['note'].widget.attrs['placeholder'] = 'Optional notes'
         self.fields['name'].widget.attrs['placeholder'] = (
             'Give this transaction a short title'
         )
+        instance_type = None
+        if getattr(self.instance, 'pk', None):
+            instance_type = self.instance.type
+        form_type = (
+            self.data.get('type')
+            if self.is_bound
+            else self.initial.get('type')
+        ) or instance_type
+        if form_type == Transaction.INCOME:
+            category_field.widget.attrs['disabled'] = 'disabled'
+            category_field.help_text = (
+                'Income does not use categories and will be saved as N/A.'
+            )
+        else:
+            category_field.widget.attrs.pop('disabled', None)
         symbol = get_currency_symbol(currency_code)
         max_amount_units = Decimal(MAX_CENTS) / Decimal(100)
         self.fields['amount_in_cents'] = forms.DecimalField(
@@ -86,6 +102,8 @@ class TransactionForm(forms.ModelForm):
 
         if txn_type == Transaction.OUTGO and category is None:
             self.add_error('category', 'Expenses must have a category.')
+        if txn_type == Transaction.INCOME:
+            cleaned_data['category'] = None
 
         return cleaned_data
 

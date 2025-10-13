@@ -48,7 +48,7 @@
                             <dt class="col-sm-4">Occurred On</dt>
                             <dd class="col-sm-8">{{ transaction.occurred_on|date:'j M Y' }}</dd>
                             <dt class="col-sm-4">Category</dt>
-                            <dd class="col-sm-8">{{ transaction.category|default:'Uncategorized' }}</dd>
+                            <dd class="col-sm-8">{{ transaction|display_category }}</dd>
                             <dt class="col-sm-4">Note</dt>
                             <dd class="col-sm-8">{{ transaction.note|default:'—' }}</dd>
                         </dl>

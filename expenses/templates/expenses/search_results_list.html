@@ -7,7 +7,7 @@
                     <div class="flex-grow-1" style="min-width: 0;">
                         <h3 class="h6 mb-1 text-primary text-truncate">{{ result.name }}</h3>
                         <div class="small text-primary text-break">
-                            {{ result.occurred_on|date:'d M Y' }} · {{ result.category|default:'Uncategorized' }}
+                            {{ result.occurred_on|date:'d M Y' }} · {{ result|display_category }}
                             {% if result.note %}<span>— {{ result.note }}</span>{% endif %}
                         </div>
                     </div>
