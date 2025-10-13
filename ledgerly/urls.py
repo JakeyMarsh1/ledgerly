@@ -2,6 +2,7 @@
 from django.urls import path, include
 from expenses import views
 from expenses.admin import ledgerly_admin_site
+from expenses.views_login import NoNextLoginView
 
 urlpatterns = [
     # Django admin for managing data when needed.
@@ -50,6 +51,8 @@ urlpatterns = [
     # Bypass allauth's intermediate logout page and immediately redirect
     # users back to the login form.
     path('accounts/logout/', views.custom_logout, name='account_logout'),
+    # Override login to remove ?next=/ if present.
+    path('accounts/login/', NoNextLoginView.as_view(), name='account_login'),
     # Include allauth's account management routes (login, signup, etc.).
     path('accounts/', include('allauth.urls')),
 ]
