@@ -228,7 +228,9 @@ def dashboard(request):
             return redirect('dashboard')
 
         category_id = request.POST.get('category') or None
-        if transaction_type == 'OUTGO' and category_id is None:
+        if transaction_type == 'INCOME':
+            category_id = None
+        elif category_id is None:
             messages.error(
                 request,
                 'Outgoing transactions require a category. '
@@ -240,6 +242,7 @@ def dashboard(request):
         if not name:
             messages.error(request, 'Please enter a name for the transaction.')
             return redirect('dashboard')
+        name = name.title()
 
         occurred_on_raw = request.POST.get('occurred_on')
         try:

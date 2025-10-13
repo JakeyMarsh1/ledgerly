@@ -105,6 +105,10 @@ class TransactionForm(forms.ModelForm):
         if txn_type == Transaction.INCOME:
             cleaned_data['category'] = None
 
+        name = cleaned_data.get('name')
+        if isinstance(name, str):
+            cleaned_data['name'] = name.strip().title()
+
         return cleaned_data
 
 
