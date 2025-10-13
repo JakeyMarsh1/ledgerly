@@ -212,3 +212,16 @@ SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/accounts/login/'
 
+# Email configuration: default to logging emails to the console so optional
+# address submission on signup does not crash when no SMTP service is
+# configured (e.g., on Heroku free tiers). Override via environment vars when
+# a real email provider is available.
+EMAIL_BACKEND = os.environ.get(
+    "EMAIL_BACKEND",
+    "django.core.mail.backends.console.EmailBackend",
+)
+DEFAULT_FROM_EMAIL = os.environ.get(
+    "DEFAULT_FROM_EMAIL",
+    "Ledgerly <no-reply@ledgerly.app>",
+)
+
