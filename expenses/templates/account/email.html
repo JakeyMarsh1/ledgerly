@@ -50,8 +50,8 @@
                                 {% csrf_token %}
                                 <div class="list-group mb-3">
                                     {% for emailaddress in emailaddresses %}
-                                        <label class="list-group-item d-flex align-items-start gap-3">
-                                            <input class="form-check-input mt-1" type="radio" name="email" value="{{ emailaddress.email }}"{% if emailaddress.primary %} checked{% endif %}>
+                                        <label class="list-group-item d-flex align-items-start gap-3" for="emailRadio{{ forloop.counter }}">
+                                            <input id="emailRadio{{ forloop.counter }}" class="form-check-input mt-1" type="radio" name="email" value="{{ emailaddress.email }}"{% if emailaddress.primary %} checked{% endif %}>
                                             <div>
                                                 <div class="fw-semibold">{{ emailaddress.email }}</div>
                                                 {% if emailaddress.primary %}

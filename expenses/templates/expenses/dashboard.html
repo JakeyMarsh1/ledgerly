@@ -316,20 +316,20 @@
                         <input type="hidden" name="action" value="add_transaction">
                         <input type="hidden" name="type" value="INCOME">
                         <div class="mb-3">
-                            <label class="form-label">Name</label>
-                            <input type="text" name="name" class="form-control" maxlength="120" required>
+                            <label class="form-label" for="addIncomeName">Name</label>
+                            <input type="text" id="addIncomeName" name="name" class="form-control" maxlength="120" required autocomplete="off">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Amount ({{ currency_symbol }})</label>
-                                <input type="number" name="amount_in_cents" class="form-control" min="0" step="1" max="{{ max_transaction_amount }}" placeholder="e.g. 125.50" required>
+                            <label class="form-label" for="addIncomeAmount">Amount ({{ currency_symbol }})</label>
+                            <input type="number" id="addIncomeAmount" name="amount_in_cents" class="form-control" min="0" step="1" max="{{ max_transaction_amount }}" placeholder="e.g. 125.50" required autocomplete="off">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Date</label>
-                            <input type="date" name="occurred_on" class="form-control" id="addIncomeDate" required>
+                            <label class="form-label" for="addIncomeDate">Date</label>
+                            <input type="date" id="addIncomeDate" name="occurred_on" class="form-control" required autocomplete="off">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Note</label>
-                            <input type="text" name="note" class="form-control" placeholder="Optional">
+                            <label class="form-label" for="addIncomeNote">Note</label>
+                            <input type="text" id="addIncomeNote" name="note" class="form-control" placeholder="Optional" autocomplete="off">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -354,16 +354,16 @@
                         <input type="hidden" name="action" value="add_transaction">
                         <input type="hidden" name="type" value="OUTGO">
                         <div class="mb-3">
-                            <label class="form-label">Name</label>
-                            <input type="text" name="name" class="form-control" maxlength="120" required>
+                            <label class="form-label" for="addExpenseName">Name</label>
+                            <input type="text" id="addExpenseName" name="name" class="form-control" maxlength="120" required autocomplete="off">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Amount ({{ currency_symbol }})</label>
-                                <input type="number" name="amount_in_cents" class="form-control" min="0" step="1" max="{{ max_transaction_amount }}" placeholder="e.g. 42.00" required>
+                            <label class="form-label" for="addExpenseAmount">Amount ({{ currency_symbol }})</label>
+                            <input type="number" id="addExpenseAmount" name="amount_in_cents" class="form-control" min="0" step="1" max="{{ max_transaction_amount }}" placeholder="e.g. 42.00" required autocomplete="off">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Category</label>
-                            <select name="category" class="form-select" required>
+                            <label class="form-label" for="addExpenseCategory">Category</label>
+                            <select id="addExpenseCategory" name="category" class="form-select" required autocomplete="off">
                                 <option value="" disabled selected>Choose a category</option>
                                 {% for category in categories %}
                                     <option value="{{ category.id }}">{{ category.name }}</option>
@@ -371,12 +371,12 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Date</label>
-                            <input type="date" name="occurred_on" class="form-control" id="addExpenseDate" required>
+                            <label class="form-label" for="addExpenseDate">Date</label>
+                            <input type="date" id="addExpenseDate" name="occurred_on" class="form-control" required autocomplete="off">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Note</label>
-                            <input type="text" name="note" class="form-control" placeholder="Optional">
+                            <label class="form-label" for="addExpenseNote">Note</label>
+                            <input type="text" id="addExpenseNote" name="note" class="form-control" placeholder="Optional" autocomplete="off">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -400,8 +400,8 @@
                         {% csrf_token %}
                         <input type="hidden" name="action" value="update_cycle_start">
                         <div class="mb-3">
-                            <label class="form-label">Cycle Start Date</label>
-                            <input type="date" name="cycle_start_date" class="form-control" value="{{ cycle_setting_start|date:'Y-m-d' }}" required>
+                            <label class="form-label" for="cycleStartDate">Cycle Start Date</label>
+                            <input type="date" id="cycleStartDate" name="cycle_start_date" class="form-control" value="{{ cycle_setting_start|date:'Y-m-d' }}" required autocomplete="off">
                         </div>
                         <p class="text-primary small mb-0">
                             This date is used to calculate monthly insights and resets.
