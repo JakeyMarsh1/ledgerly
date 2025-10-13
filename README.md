@@ -32,6 +32,7 @@ Ledgerly is a simple Django + Postgres web app to record incomes and outgoings, 
 - [Setup & Deployment](#setup--deployment)
 - [Testing](#testing)
 - [Known Issues, Assumptions & Limitations](#known-issues-assumptions--limitations)
+- [Data Validation](#data-validation)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
 - [Usage of AI](#usage-of-ai)
@@ -53,6 +54,39 @@ Ledgerly helps users understand what they can safely spend this month by combini
 - Categories: global list; required for outgoings, optional for incomes.
 - Authentication: sign up, log in, log out; per-user data isolation.
 - Data integrity: store money in integer pence; format in views/templates.
+
+### CRUD Functionality Table
+
+| Area         | Create | Read | Update | Delete |
+|--------------|:------:|:----:|:------:|:------:|
+| Transactions |   ✅   |  ✅  |   ✅   |   ✅   |
+| Categories   | Admin  |  ✅  |  Admin |  Admin |
+| Users        |   ✅   |  ✅  |   ✅   |   ✅   |
+
+- **Transactions:** All users can add, view, edit, and delete their own transactions.
+- **Categories:** Only admins can create, update, or delete categories; all users can select and view them.
+- **Users:** Users can register, view/edit their profile, and delete their own account.
+
+#### Defensive Design
+
+- All transaction and category forms validate input both client-side and server-side to prevent invalid or tampered data.
+- Outgoing transactions require a valid category; incomes cannot be assigned a category (enforced in both UI and backend).
+- User authentication and per-user data isolation are enforced for all transaction and dashboard views.
+- Attempts to access or modify another user’s data are blocked and logged.
+- Admin-only actions (category CRUD) are restricted to staff users in Django admin.
+- All monetary values are stored as integers (cents/pence) to prevent floating-point errors.
+- Error messages and form feedback are clear, contextual, and never leak sensitive information.
+- Session and CSRF protections are enabled by default via Django’s middleware.
+
+#### Data Validation
+
+- All forms use Django’s built-in validation to enforce required fields, correct data types, and business rules.
+- Client-side validation provides instant feedback for missing or invalid entries before submission.
+- Server-side validation ensures that only valid, untampered data is saved, regardless of client behavior.
+- Custom form logic prevents assigning categories to incomes and blocks outgoings without a category.
+- Attempts to bypass validation (e.g., via browser dev tools) are caught and rejected by the backend.
+- All user input is sanitized and escaped before rendering to prevent XSS and injection attacks.
+- Numeric fields (amounts) are checked for valid ranges and stored as integers for accuracy.
 
 ---
 
@@ -312,6 +346,7 @@ I used the MoSCoW prioritization method to classify features and tasks:
 | Dashboard     | Total recalculation    | Create/edit/delete transactions| “Available to spend” updates immediately   | ✅     |
 | Security      | Data isolation         | Log in as second user          | Only that user’s data visible              | ✅     |
 | Responsiveness| Mobile view            | Use a small viewport           | Layout remains readable and usable         | ✅     |
+| Admin         | CRUD in Django admin   | Use Django admin to add/edit/delete users, categories, transactions | Changes reflected in app and database | ✅     |
 
 ### Validation Results
 
@@ -338,7 +373,7 @@ I used the MoSCoW prioritization method to classify features and tasks:
 - **JavaScript:**  
     - Tool: JSHint  
     - Date: 09-Oct-2025  
-    - Status: 1 warning (unused variable, due to chart.js import not being picked up)  
+    - Status: 1 warning (unused variables, due to imports not being picked up from bootstrap and chart.js, also uses ES6 and Jshint expects ES5)  
         ![JS Linter](assets/readme_images/jshint.png)
 
 ---
@@ -352,6 +387,18 @@ I used the MoSCoW prioritization method to classify features and tasks:
 - Categories are shared across all users; OUTGO requires a category, INCOME does not.
 - Weekly “available to spend” derives from current month context and recent transactions; advanced analytics deferred.
 - Authentication relies on Django’s built‑in auth; no social login in MVP.
+
+---
+
+## Data Validation
+
+- All forms use Django’s built-in validation to enforce required fields, correct data types, and business rules.
+- Client-side validation provides instant feedback for missing or invalid entries before submission.
+- Server-side validation ensures that only valid, untampered data is saved, regardless of client behavior.
+- Custom form logic prevents assigning categories to incomes and blocks outgoings without a category.
+- Attempts to bypass validation (e.g., via browser dev tools) are caught and rejected by the backend.
+- All user input is sanitized and escaped before rendering to prevent XSS and injection attacks.
+- Numeric fields (amounts) are checked for valid ranges and stored as integers for accuracy.
 
 ---
 
