@@ -68,7 +68,7 @@ class TransactionForm(forms.ModelForm):
             max_digits=18,
             min_value=Decimal('0.00'),
             widget=forms.NumberInput(attrs={
-                'step': '0.01',
+                'step': '1',
                 'max': str(max_amount_units)
             }),
         )

@@ -187,6 +187,17 @@ a:focus,
     transition: opacity 0.2s ease !important;
 }
 
+.modal .btn-close {
+    filter: invert(92%) sepia(12%) saturate(356%) hue-rotate(182deg)
+        brightness(112%) contrast(96%) !important;
+    opacity: 0.85 !important;
+}
+
+.modal .btn-close:hover,
+.modal .btn-close:focus {
+    opacity: 1 !important;
+}
+
 .btn-close:hover,
 .btn-close:focus {
     opacity: 1 !important;
@@ -568,6 +579,15 @@ a:focus,
 .calendar-button-icon {
     width: 1.125rem;
     height: 1.125rem;
+    filter: invert(88%) sepia(12%) saturate(321%) hue-rotate(182deg)
+        brightness(114%) contrast(95%);
+    transition: filter 0.2s ease;
+}
+
+.btn:hover .calendar-button-icon,
+.btn:focus .calendar-button-icon {
+    filter: invert(99%) sepia(6%) saturate(218%) hue-rotate(175deg)
+        brightness(120%) contrast(100%);
 }
 
 .calendar-modal {
@@ -624,6 +644,21 @@ a:focus,
 .modal-content input[type="date"]:hover::-webkit-calendar-picker-indicator,
 .modal-content input[type="date"]:focus-visible::-webkit-calendar-picker-indicator {
     filter: invert(86%) sepia(37%) saturate(847%) hue-rotate(352deg) brightness(110%) contrast(105%);
+    opacity: 1;
+}
+
+.form-control[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(72%) sepia(32%) saturate(612%) hue-rotate(188deg)
+        brightness(112%) contrast(98%);
+    opacity: 0.9;
+    cursor: pointer;
+    transition: filter 0.2s ease, opacity 0.2s ease;
+}
+
+.form-control[type="date"]:hover::-webkit-calendar-picker-indicator,
+.form-control[type="date"]:focus-visible::-webkit-calendar-picker-indicator {
+    filter: invert(88%) sepia(28%) saturate(834%) hue-rotate(182deg)
+        brightness(120%) contrast(102%);
     opacity: 1;
 }
 
