@@ -24,7 +24,7 @@
     <nav class="navbar navbar-light bg-light">
         <div class="container-fluid px-4">
             <!-- Brand logo/title linking back to dashboard -->
-            <a class="navbar-brand mb-0 h1" href="{% url 'dashboard' %}">LEDGERLY</a>
+            <a class="navbar-brand mb-0 h1" href="{% url 'dashboard' %}">Ledgerly</a>
             
             <!-- User account dropdown menu -->
             <div class="ms-auto">
@@ -194,10 +194,10 @@
                 <div class="col-md-6">
                     <div class="card shadow-sm h-100">
                         <div class="card-body">
-                            <!-- Top Row: Monthly Budget and Amount -->
+                            <!-- Top Row: Monthly Remaining and Amount -->
                             <div class="row mb-4 text-primary">
                                 <div class="col-6">
-                                    <span class="text-uppercase small fw-semibold">Monthly Budget</span>
+                                    <span class="text-uppercase small fw-semibold">Monthly Remaining</span>
                                 </div>
                                 <div class="col-6 text-end">
                                     {% if balance >= 0 %}

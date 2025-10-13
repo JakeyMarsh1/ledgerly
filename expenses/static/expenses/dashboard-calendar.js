@@ -415,11 +415,10 @@
 
     modalEl.addEventListener('show.bs.modal', () => {
         clearError();
-        if (loadingEl) {
-            loadingEl.classList.remove('d-none');
-        }
-        if (contentEl) {
-            contentEl.classList.add('d-none');
+        if (hasLoadedOnce) {
+            setLoading(false);
+        } else {
+            setLoading(true);
         }
     });
 
