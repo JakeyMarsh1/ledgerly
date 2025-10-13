@@ -91,6 +91,7 @@
                         <div class="card-body">
                             <div class="mb-2">
                                 <h2 class="h5 mb-0 text-primary">Spend History</h2>
+                                <p class="small text-secondary mb-0">Latest Entries</p>
                             </div>
                             <div class="dashboard-scroll-320">
                                 <ul class="list-group list-group-flush">
@@ -121,7 +122,10 @@
                 <div class="col-lg-3 d-none d-lg-block">
                     <div class="card shadow-sm h-100">
                         <div class="card-body">
-                            <h2 class="h5 mb-3 text-primary">Top Expenses</h2>
+                            <div class="mb-2">
+                                <h2 class="h5 mb-0 text-primary">Top Expenses</h2>
+                                <p class="small text-secondary mb-0">Biggest Outgoings</p>
+                            </div>
                             <div class="dashboard-scroll-320 mt-2">
                                 <ul class="list-group list-group-flush">
                                     {% for expense in top_expenses %}
@@ -175,12 +179,12 @@
                                     <input type="search" name="q" class="form-control" placeholder="Search transactions..." value="{{ search_query }}" autocomplete="off">
                                 </div>
                             </form>
-                                             <p id="search-message" class="small text-secondary mb-2"
-                                                 data-default-message="Recent activity"
+                                            <p id="search-message" class="small text-secondary mb-2"
+                                                                 data-default-message="Recent Activity"
                                                  data-empty-message="No transactions to show yet."
                                        data-found-prefix='Results for "'
                                        data-found-suffix='"'>
-                                        {% if search_query %}Results for "{{ search_query }}"{% else %}Recent activity{% endif %}
+                                        {% if search_query %}Results for "{{ search_query }}"{% else %}Recent Activity{% endif %}
                                     </p>
                             <div id="search-results" class="dashboard-scroll-260 mt-2">
                                 {% if search_query %}
@@ -210,6 +214,7 @@
                             <div class="row mb-4 text-primary">
                                 <div class="col-6">
                                     <span class="text-uppercase small fw-semibold">Monthly Remaining</span>
+                                    <p class="small text-secondary mb-0">Balance after this cycle</p>
                                 </div>
                                 <div class="col-6 text-end">
                                     {% if balance >= 0 %}
