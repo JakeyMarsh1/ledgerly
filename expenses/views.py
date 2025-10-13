@@ -570,7 +570,7 @@ def clear_history(request):
             request,
             'Transaction history cleared. Enjoy the fresh start!'
         )
-        return redirect('dashboard')
+        return redirect('account_clear_history')
 
     return render(
         request,
@@ -648,7 +648,7 @@ def currency_settings(request):
             updated = form.save()
             display = updated.get_currency_code_display()
             messages.success(request, f"Currency updated to {display}.")
-            return redirect('dashboard')
+            return redirect('account_currency_settings')
     else:
         form = CurrencySettingsForm(instance=settings_obj)
 
